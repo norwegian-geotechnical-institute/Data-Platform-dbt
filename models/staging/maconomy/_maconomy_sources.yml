@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: maconomy_bronze
+    description: "Bronze Maconomy tables landed by the JDBC ingestion job."
+    catalog: "{{ env_var('DBT_DATABRICKS_CATALOG', 'dp_test') }}"
+    schema: bronze
+    tables:
+      - name: entity
+        description: "Source-aligned entity dimension data from Maconomy."
+        loaded_at_field: ingested_at
+        columns:
+          - name: INSTANCEKEY
+            tests:
+              - not_null
+              - unique
+          - name: TRANSACTIONTIMESTAMP
+            tests:
+              - not_null
+
+      - name: jobentry
+        description: "Source-aligned job entry data from Maconomy."
+        loaded_at_field: ingested_at
+        columns:
+          - name: INSTANCEKEY
+            tests:
+              - not_null
+              - unique
+          - name: TRANSACTIONTIMESTAMP
+            tests:
+              - not_null

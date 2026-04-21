@@ -1,0 +1,25 @@
+name: data_platform
+version: 1.0.0
+config-version: 2
+
+profile: data_platform
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  data_platform:
+    +catalog: "{{ env_var('DBT_DATABRICKS_CATALOG', 'dp_test') }}"
+    staging:
+      +schema: silver
+      +materialized: view
+    intermediate:
+      +schema: silver
+      +materialized: view
+    marts:
+      +schema: gold
+      +materialized: table
