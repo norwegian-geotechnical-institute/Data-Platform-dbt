@@ -4,6 +4,9 @@ config-version: 2
 
 profile: data_platform
 
+flags:
+  partial_parse: true
+
 model-paths: ["models"]
 macro-paths: ["macros"]
 target-path: "target"
