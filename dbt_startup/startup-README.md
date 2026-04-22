@@ -52,8 +52,6 @@ The `$vault`, `$env:DBT_DATABRICKS_HOST`, `$env:DBT_DATABRICKS_HTTP_PATH`, and `
 | `$projectPath = "C:\Projects\ngi\Data-Platform-dbt"` | A specific path | The absolute path where *you* cloned this repo |
 | `$loaderPath = "$env:USERPROFILE\scripts\ngi\load-dbt-env.ps1"` | Points to a user folder | Leave as-is if you copy `load-dbt-env.ps1` to `~\scripts\ngi\`, or update to wherever you keep it |
 
-> **Why not inside the repo?** `load-dbt-env.ps1` can stay inside the repo too — if so, update `$loaderPath` to point at `$projectPath\scripts\load-dbt-env.ps1`. Keeping it outside the repo is just habit from when it held secrets; now that secrets come from Key Vault, either location works.
-
 ---
 
 ## Usage
