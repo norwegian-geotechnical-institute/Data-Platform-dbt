@@ -44,7 +44,8 @@ if (Test-Path $activateScript) {
 
 Write-Step "Checking Azure authentication..."
 $azAccount = az account show 2>$null | ConvertFrom-Json
-if ($azAccount) {
+$tokenTest = az account get-access-token --query expiresOn -o tsv 2>$null
+if ($azAccount -and $tokenTest) {
     Write-Step "Signed in as: $($azAccount.user.name)" "OK"
     Write-Step "Subscription:  $($azAccount.name)" "OK"
 } else {
