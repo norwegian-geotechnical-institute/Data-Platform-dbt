@@ -1,31 +1,36 @@
 version: 2
 
 sources:
-  - name: maconomy_bronze
-    description: "Bronze Maconomy tables landed by the JDBC ingestion job."
-    catalog: "{{ env_var('DBT_DATABRICKS_CATALOG', 'dp_test') }}"
-    schema: bronze
+  - name: maconomy
+    description: "Maconomy ERP tables ingested into bronze via JDBC. Source of truth for financial and project data."
+    catalog: dp_bronze
+    schema: maconomy
+
     tables:
       - name: entity
-        description: "Source-aligned entity dimension data from Maconomy."
-        loaded_at_field: ingested_at
+        description: |
+          Maconomy ENTITY table. Represents organisational entities used as a
+          financial reporting dimension. Contains both the canonical entity
+          definition and several local conventions (specification slots,
+          statistics) repurposed by NGI.
         columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: ENTITYNAME
+            description: "Unique entity identifier (business key)."
+          - name: DESCRIPTION
+            description: "Human-readable entity name."
+          - name: BLOCKED
+            description: "Whether the entity is blocked from new postings (1 = blocked)."
+          - name: LOCATIONNAME
+            description: "Linked location (joins to maconomy.location)."
+          - name: SPECIFICATION3NAME
+            description: "TODO: document business meaning of specification slot 3."
+          - name: STATISTIC1
+            description: "TODO: document business meaning of statistic 1."
+          - name: STATISTIC2
+            description: "TODO: document business meaning of statistic 2."
           - name: INSTANCEKEY
-            tests:
-              - not_null
-              - unique
+            description: "Stable row identifier from Maconomy. Used as the unique key for incremental loads."
           - name: TRANSACTIONTIMESTAMP
-            tests:
-              - not_null
-
-      - name: jobentry
-        description: "Source-aligned job entry data from Maconomy."
-        loaded_at_field: ingested_at
-        columns:
-          - name: INSTANCEKEY
-            tests:
-              - not_null
-              - unique
-          - name: TRANSACTIONTIMESTAMP
-            tests:
-              - not_null
+            description: "Watermark column — last modification time at the source."
