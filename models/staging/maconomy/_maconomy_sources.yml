@@ -142,4 +142,85 @@ sources:
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
 
-            
+      - name: jobentry
+        description: |
+          Maconomy JOBENTRY table. Time and cost entries against jobs/projects.
+          Source for project profitability and labour cost analysis.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: ENTRYNUMBER
+            description: "Entry number within the job."
+          - name: JOBNUMBER
+            description: "Job this entry belongs to."
+          - name: JOURNALNUMBER
+            description: "Journal that this entry belongs to."
+          - name: JOURNALLINENUMBER
+            description: "Line number within the journal."
+          - name: TRANSACTIONNUMBER
+            description: "Transaction identifier."
+          - name: TRANSACTIONTYPE
+            description: "Type of transaction."
+          - name: POSTINGDATE
+            description: "Date the entry was posted."
+          - name: ENTRYDATE
+            description: "Date the entry was created/registered."
+          - name: COMPANYNUMBER
+            description: "Posting company."
+          - name: ACTIVITYNUMBER
+            description: "Activity dimension link (joins to maconomy.activity)."
+          - name: ACTIVITYTEXT
+            description: "Activity description as captured at posting time."
+          - name: TEXT
+            description: "Free-text description of the entry."
+          - name: EMPLOYEENUMBER
+            description: "Employee who registered the entry."
+          - name: NUMBERREGISTERED
+            description: "Quantity registered — typically hours."
+          - name: COSTPRICE
+            description: "Cost price applied to the entry."
+          - name: ORIGINALCOSTPRICE
+            description: "Original cost price before any adjustments."
+          - name: MARKUPPERCENTAGE
+            description: "Markup percentage applied to the entry."
+          - name: INVOICENUMBER
+            description: "Invoice the entry has been billed on (if any)."
+          - name: LOCATIONNAME
+            description: "Location dimension link."
+          - name: ENTITYNAME
+            description: "Entity dimension link (joins to maconomy.entity / department)."
+          - name: PROJECTNAME
+            description: "Project dimension link."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+      - name: location
+        description: |
+          Maconomy LOCATION table. Location dimension — sites or
+          organisational locations referenced from finance entries
+          and other transactional tables.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: LOCATIONNAME
+            description: "Location name; the business key for the location."
+          - name: DESCRIPTION
+            description: "Human-readable location label."
+          - name: BLOCKED
+            description: "Whether the location is blocked from new postings."
+          - name: ENTITYNAME
+            description: "Entity (department) dimension link — default entity for this location."
+          - name: SPECIFICATION2NAME
+            description: "TODO: document business meaning of specification slot 2 for locations."
+          - name: STATISTIC1
+            description: "TODO: document business meaning of statistic 1 for locations."
+          - name: STATISTIC2
+            description: "TODO: document business meaning of statistic 2 for locations."
+          - name: REMARK1
+            description: "TODO: document business meaning of remark 1 for locations."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."  

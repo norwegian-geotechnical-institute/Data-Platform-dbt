@@ -105,3 +105,46 @@ models:
         description: "Watermark from the source system — last modification time."
         tests:
           - not_null
+      
+  - name: stg_maconomy_jobentry
+    description: "Standardized staging view over bronze Maconomy job entry data."
+    columns:
+      - name: job_entry_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: job_number
+        description: "Job this entry belongs to."
+        tests:
+          - not_null
+      - name: entry_number
+        description: "Entry number within the job."
+        tests:
+          - not_null
+      - name: posting_date
+        description: "Date the entry was posted."
+        tests:
+          - not_null
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
+    
+  - name: stg_maconomy_location
+    description: "Standardized staging view over bronze Maconomy location data."
+    columns:
+      - name: location_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: location_name
+        description: "Location name; the business key for the location."
+        tests:
+          - not_null
+          - unique
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
