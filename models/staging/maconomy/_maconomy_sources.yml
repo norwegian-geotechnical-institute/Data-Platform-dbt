@@ -79,3 +79,67 @@ sources:
             description: "Stable row identifier from Maconomy. Unique key for incremental loads."
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
+
+      - name: financeentry
+        description: |
+          Maconomy FINANCEENTRY table. Transactional finance postings —
+          one row per accounting entry. Source for the financial fact tables.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONNUMBER
+            description: "Transaction identifier; multiple finance entries can share a transaction."
+          - name: LINENUMBER
+            description: "Line number within the transaction."
+          - name: TRANSACTIONTYPE
+            description: "Type of transaction (posting category)."
+          - name: JOURNALNUMBER
+            description: "Journal that this entry belongs to."
+          - name: ACCOUNTNUMBER
+            description: "Account this entry posts to (joins to maconomy.account)."
+          - name: ORIGINALAMOUNT
+            description: "Posting amount in the entry's original currency."
+          - name: POSTINGDATE
+            description: "Date the entry was posted to the ledger."
+          - name: POSTINGTIME
+            description: "Time component of posting (alongside POSTINGDATE)."
+          - name: ENTRYDATE
+            description: "Date the entry was created/registered."
+          - name: REFERENCEDATE
+            description: "Reference date used for cut-off and reporting."
+          - name: VATDATE
+            description: "VAT-relevant date for the entry."
+          - name: FISCALYEAR
+            description: "Fiscal year the entry belongs to."
+          - name: ENTRYTEXT
+            description: "Free-text description of the posting."
+          - name: LOCATIONNAME
+            description: "Location dimension link."
+          - name: ENTITYNAME
+            description: "Entity dimension link (joins to maconomy.entity / department)."
+          - name: PROJECTNAME
+            description: "Project dimension link."
+          - name: ACTIVITYNUMBER
+            description: "Activity dimension link (joins to maconomy.activity)."
+          - name: TASKNAME
+            description: "Task within the activity / job."
+          - name: CUSTOMERNUMBER
+            description: "Customer dimension link (when the entry is customer-related)."
+          - name: VENDORNUMBER
+            description: "Vendor dimension link (when the entry is vendor-related)."
+          - name: COMPANYNUMBER
+            description: "Posting company (intercompany context)."
+          - name: REPORTINGCOMPANY
+            description: "Reporting company (may differ from posting company in intercompany scenarios)."
+          - name: SUBLEDGERENTRYNUMBER
+            description: "Subledger entry reference."
+          - name: SPECIFICATION2NAME
+            description: "TODO: document business meaning of specification slot 2 for finance entries."
+          - name: SPECIFICATION3NAME
+            description: "TODO: document business meaning of specification slot 3 for finance entries."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+            

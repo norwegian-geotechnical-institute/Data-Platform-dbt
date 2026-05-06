@@ -76,4 +76,32 @@ models:
         description: "Watermark from the source system — last modification time."
         tests:
           - not_null
-          
+
+  - name: stg_maconomy_financeentry
+    description: "Standardized staging view over bronze Maconomy finance entry data."
+    columns:
+      - name: finance_entry_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: account_number
+        description: "Account this entry posts to."
+        tests:
+          - not_null
+      - name: transaction_number
+        description: "Transaction identifier; multiple finance entries can share a transaction."
+        tests:
+          - not_null
+      - name: line_number
+        description: "Line number within the transaction."
+        tests:
+          - not_null
+      - name: posting_date
+        description: "Date the entry was posted to the ledger."
+        tests:
+          - not_null
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
