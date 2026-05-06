@@ -9,6 +9,7 @@ flags:
 
 model-paths: ["models"]
 macro-paths: ["macros"]
+
 target-path: "target"
 clean-targets:
   - "target"
@@ -16,13 +17,15 @@ clean-targets:
 
 models:
   data_platform:
-    +catalog: "{{ env_var('DBT_DATABRICKS_CATALOG', 'dp_test') }}"
     staging:
-      +schema: silver
+      +catalog: "{{ env_var('DBT_DATABRICKS_SILVER_CATALOG', 'dp_silver') }}"
+      +schema: stg
       +materialized: view
     intermediate:
-      +schema: silver
+      +catalog: "{{ env_var('DBT_DATABRICKS_SILVER_CATALOG', 'dp_silver') }}"
+      +schema: int
       +materialized: view
     marts:
-      +schema: gold
+      +catalog: "{{ env_var('DBT_DATABRICKS_GOLD_CATALOG', 'dp_gold') }}"
+      +schema: dm
       +materialized: table
