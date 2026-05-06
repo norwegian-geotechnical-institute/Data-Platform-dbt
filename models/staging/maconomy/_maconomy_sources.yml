@@ -34,3 +34,33 @@ sources:
             description: "Stable row identifier from Maconomy. Used as the unique key for incremental loads."
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
+      - name: account
+        description: |
+          Maconomy ACCOUNT table. Chart of accounts — defines the account
+          hierarchy, type classifications, and posting rules used across
+          financial transactions.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: ACCOUNTNUMBER
+            description: "Account number; the business key for the account."
+          - name: ACCOUNTTEXT
+            description: "Human-readable account name."
+          - name: ENTRYACCOUNTTYPE
+            description: "Type classification for postings (e.g. asset, liability, revenue, expense)."
+          - name: ACCOUNTGROUP
+            description: "Account group for hierarchical reporting."
+          - name: PROFITANDLOSSSTATUS
+            description: "P&L status indicator."
+          - name: DEPARTMENTNUMBER
+            description: "Default department for this account."
+          - name: STATISTIC1
+            description: "TODO: document business meaning of statistic 1 for accounts."
+          - name: REMARK1
+            description: "TODO: document business meaning of remark 1 for accounts."
+          - name: REMARK3
+            description: "TODO: document business meaning of remark 3 for accounts."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."

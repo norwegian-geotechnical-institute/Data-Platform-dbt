@@ -1,27 +1,45 @@
 version: 2
 
 models:
-  - name: stg_maconomy_entity
-    description: "Standardized staging view over bronze Maconomy entity data."
+  - name: stg_maconomy_department
+    description: |
+      Department dimension staged from Maconomy ENTITY. NGI uses Maconomy's
+      ENTITY concept to represent departments; specification slot 3 holds
+      the department number, and statistic slots 1 and 2 hold the
+      area (område) number and name.
     columns:
-      - name: instance_key
+      - name: department_row_id
+        description: "Internal numeric row identifier from Maconomy."
+      - name: department_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
         tests:
           - not_null
           - unique
-      - name: entity_name
+      - name: department_name
+        description: "Maconomy entity name; functions as the business key for the department."
         tests:
           - not_null
-      - name: transaction_timestamp
+      - name: department_description
+        description: "Human-readable department label."
+      - name: is_blocked
+        description: "Whether the department is blocked from new postings."
+      - name: location_name
+        description: "Linked location (joins to maconomy.location)."
+      - name: departmentnr
+        description: "Department number (sourced from Maconomy specification slot 3)."
+      - name: omradenr
+        description: "Area number (sourced from Maconomy statistic slot 1)."
+      - name: omradename
+        description: "Area display name (sourced from Maconomy statistic slot 2)."
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
         tests:
           - not_null
-
-  - name: stg_maconomy_jobentry
-    description: "Minimal standardized staging view over bronze Maconomy job entry data."
-    columns:
-      - name: instance_key
-        tests:
-          - not_null
-          - unique
-      - name: transaction_timestamp
-        tests:
-          - not_null
+      - name: ingested_at
+        description: "Timestamp when bronze ingest landed this row."
+      - name: ingestion_run_id
+        description: "Bronze run identifier; lets you trace which ingest run produced this row."
+      - name: source_system
+        description: "Source system identifier (always 'maconomy' for this model)."
+      - name: source_object
+        description: "Source object identifier (always 'entity' for this model)."
