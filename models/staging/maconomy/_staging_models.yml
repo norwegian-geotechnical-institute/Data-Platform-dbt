@@ -43,3 +43,37 @@ models:
         description: "Source system identifier (always 'maconomy' for this model)."
       - name: source_object
         description: "Source object identifier (always 'entity' for this model)."
+  - name: stg_maconomy_account
+    description: "Standardized staging view over bronze Maconomy account data."
+    columns:
+      - name: account_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: account_number
+        description: "Account number; the business key for the account."
+        tests:
+          - not_null
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
+  - name: stg_maconomy_activity
+    description: "Standardized staging view over bronze Maconomy activity data."
+    columns:
+      - name: activity_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: activity_number
+        description: "Activity number; the business key for the activity."
+        tests:
+          - not_null
+          - unique
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
+          

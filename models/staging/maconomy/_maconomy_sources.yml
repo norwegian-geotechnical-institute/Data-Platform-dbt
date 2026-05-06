@@ -64,3 +64,18 @@ sources:
             description: "Stable row identifier from Maconomy. Unique key for incremental loads."
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
+      - name: activity
+        description: |
+          Maconomy ACTIVITY table. Defines billable activities used as a
+          dimension on job entries.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: ACTIVITYNUMBER
+            description: "Activity number; the business key for the activity."
+          - name: ACTIVITYTEXT
+            description: "Human-readable activity name."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
