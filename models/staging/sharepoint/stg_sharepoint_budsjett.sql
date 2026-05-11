@@ -42,10 +42,10 @@ unpivoted as (
 
 renamed as (
     select
-        selskapsnummer as company_number,
-        kontotekst as account_text,
-        konto as account_number,
-        avdeling as department_number,
+        selskapsnummer,
+        kontotekst,
+        konto,
+        avdeling,
         sheet,
         try_cast(substring(source_filename, 1, 4) as int) as budget_year,
         month_number,
