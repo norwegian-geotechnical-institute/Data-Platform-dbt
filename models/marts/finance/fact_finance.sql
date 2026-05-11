@@ -1,40 +1,31 @@
 with int_finance as (
     select
-        finance_entry_instance_key,
         transaction_number,
-        line_number,
-        journal_number,
-        account_number,
-        activity_number,
+        account_id,
+        activity_id,
         entry_date,
         posting_date,
-        location_name,
-        entity_name,
-        project_name,
+        location_id,
+        sub_department_id,
         entry_text,
-        debit_base,
-        credit_base
+        debit_base_amt,
+        credit_base_amt
     from {{ ref('int_finance') }}
 ),
 
 with_calcs as (
     select
-        finance_entry_instance_key,
         transaction_number,
-        line_number,
-        journal_number,
-        account_number,
-        activity_number,
-        location_name,
-        entity_name,
-        project_name,
+        account_id,
+        activity_id,
         entry_date,
         posting_date,
-        date_trunc('month', entry_date)  as entry_month,
+        location_id,
+        sub_department_id,
         entry_text,
-        debit_base,
-        credit_base,
-        coalesce(credit_base, 0) - coalesce(debit_base, 0)  as salgspris
+        debit_base_amt,
+        credit_base_amt,
+        coalesce(credit_base_amt, 0) - coalesce(debit_base_amt, 0)  as salesprice
 
     from int_finance
 )

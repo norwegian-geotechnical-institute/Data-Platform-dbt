@@ -1,16 +1,12 @@
 with stage as (
     select
-        finance_entry_instance_key,
         transaction_number,
-        line_number,
-        journal_number,
         account_number,
         activity_number,
         entry_date,
         posting_date,
         location_name,
         entity_name,
-        project_name,
         entry_text,
         debit_base,
         credit_base,
@@ -21,20 +17,16 @@ with stage as (
 
 typed as (
     select
-        finance_entry_instance_key,
-        transaction_number,
-        line_number,
-        journal_number,
-        try_cast(account_number as int)   as account_number,
-        try_cast(activity_number as int)  as activity_number,
+        try_cast(transaction_number as int) as transaction_number,
+        try_cast(account_number as int)   as account_id,
+        try_cast(activity_number as int)  as activity_id,
         try_cast(entry_date as date)      as entry_date,
         try_cast(posting_date as date)    as posting_date,
-        location_name,
-        entity_name,
-        project_name,
+        try_cast(location_name as int) as location_id,
+        try_cast(entity_name as int) as sub_department_id,
         entry_text,
-        debit_base,
-        credit_base,
+        debit_base as debit_base_amt,
+        credit_base as credit_base_amt,
         source_system      as sys_source_system,
         source_object      as sys_source_object
     from stage
