@@ -50,11 +50,3 @@ sources:
           - name: source_filename
             description: "Original filename. Used to extract budget year."
 
-      - name: omrader
-        description: |
-          Area (område) lookup from Avdeling.xlsx. Maps area IDs to display names.
-        columns:
-          - name: områdeid
-            description: "Area identifier."
-          - name: områdenavn
-            description: "Area display name."
