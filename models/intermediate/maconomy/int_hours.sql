@@ -1,11 +1,7 @@
 with stage as (
     select
-        job_entry_instance_key,
         job_number,
-        entry_number,
         transaction_number,
-        journal_number,
-        journal_line_number,
         activity_number,
         entry_date,
         finance_entry_date,
@@ -14,8 +10,6 @@ with stage as (
         billing_price_reg_base,
         billing_price_up_down_base,
         cost_price,
-        ingested_at,
-        ingestion_run_id,
         source_system,
         source_object
     from {{ ref('stg_maconomy_jobentry') }}
@@ -23,20 +17,16 @@ with stage as (
 
 typed as (
     select
-        job_entry_instance_key,
-        job_number,
-        entry_number,
-        transaction_number,
-        journal_number,
-        journal_line_number,
-        try_cast(activity_number as int)      as activity_number,
+        try_cast(job_number as int) as job_id,
+        try_cast(transaction_number as int) as transaction_number,
+        try_cast(activity_number as int)      as activity_id,
         try_cast(entry_date as date)          as entry_date,
         try_cast(finance_entry_date as date)  as finance_entry_date,
         entry_text,
-        number_registered,
-        billing_price_reg_base,
-        billing_price_up_down_base,
-        cost_price,
+        number_registered as number_registered_qty,
+        billing_price_reg_base as billing_price_reg_base_amt,
+        billing_price_up_down_base as billing_price_up_down_base_amt,
+        cost_price as cost_price_amt,
         source_system       as sys_source_system,
         source_object       as sys_source_object
     from stage

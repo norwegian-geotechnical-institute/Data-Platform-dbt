@@ -1,40 +1,30 @@
 with int_hours as (
     select
-        job_entry_instance_key,
-        job_number,
-        entry_number,
+        job_id,
         transaction_number,
-        journal_number,
-        journal_line_number,
-        activity_number,
+        activity_id,
         entry_date,
         finance_entry_date,
         entry_text,
-        number_registered,
-        billing_price_reg_base,
-        billing_price_up_down_base,
-        cost_price
+        number_registered_qty,
+        billing_price_reg_base_amt,
+        billing_price_up_down_base_amt,
+        cost_price_amt
     from {{ ref('int_hours') }}
 ),
 
 with_calcs as (
     select
-        job_entry_instance_key,
-        job_number,
-        entry_number,
+        job_id,
         transaction_number,
-        journal_number,
-        journal_line_number,
-        activity_number,
+        activity_id,
         entry_date,
         finance_entry_date,
-        date_trunc('month', entry_date)          as entry_month,
-        date_trunc('month', finance_entry_date)  as finance_entry_month,
         entry_text,
-        number_registered                        as hours,
-        billing_price_reg_base                   as revenue,
-        billing_price_up_down_base               as revenue_adjustment,
-        cost_price                               as cost
+        number_registered_qty,
+        billing_price_reg_base_amt,
+        billing_price_up_down_base_amt,
+        cost_price_amt
     from int_hours
 )
 
