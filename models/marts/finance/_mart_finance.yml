@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: dim_account
+    description: "Account dimension. One row per account."
+    columns:
+      - name: account_id
+        description: "Account number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: account_name
+        description: "Account text/description."
+
+  - name: dim_activity
+    description: "Activity dimension. One row per activity."
+    columns:
+      - name: activity_id
+        description: "Activity number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: activity_name
+        description: "Activity text/description."
+
+  - name: dim_department
+    description: |
+      Department dimension with hierarchy: omrade → department → sub_department,
+      plus location link. Sourced from Maconomy entity with NGI local
+      conventions applied at staging.
+    columns:
+      - name: sub_department_id
+        description: "Sub-department identifier (typed int). Business key from Maconomy entity name."
+        tests:
+          - not_null
+          - unique
+      - name: sub_department_name
+        description: "Sub-department description."
+      - name: department_id
+        description: "Department identifier (typed int). From Maconomy specification slot 3."
+      - name: omrade_id
+        description: "Område (area) identifier (typed int). From Maconomy statistic slot 1."
+      - name: omrade_name
+        description: "Område display name. From Maconomy statistic slot 2."
+      - name: location_id
+        description: "Location identifier (typed int). Foreign key to dim_location.location_id."
+
+  - name: dim_location
+    description: "Location dimension. One row per location."
+    columns:
+      - name: location_id
+        description: "Location identifier (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: location_name
+        description: "Location description (the human-readable label)."
+
+  - name: fact_finance
+    description: |
+      Finance entries — one row per posting. Includes calculated salesprice
+      (credit_base_amt - debit_base_amt) for revenue measures. Joins to
+      dim_account, dim_activity, dim_location, dim_department via *_id keys.
+    columns:
+      - name: transaction_number
+        description: "Transaction identifier (typed int). Drilldown identifier."
+      - name: account_id
+        description: "Account number (typed int). Foreign key to dim_account.account_id."
+        tests:
+          - not_null
+      - name: activity_id
+        description: "Activity number (typed int). Foreign key to dim_activity.activity_id."
+      - name: location_id
+        description: "Location identifier (typed int). Foreign key to dim_location.location_id."
+      - name: sub_department_id
+        description: "Sub-department identifier (typed int). Foreign key to dim_department.sub_department_id."
+      - name: entry_date
+        description: "Entry date (typed date). Primary date for month-based measures."
+        tests:
+          - not_null
+      - name: posting_date
+        description: "Posting date (typed date)."
+      - name: entry_text
+        description: "Free-text description of the posting. For drilldown."
+      - name: debit_base_amt
+        description: "Debit amount in base currency."
+      - name: credit_base_amt
+        description: "Credit amount in base currency."
+      - name: salesprice
+        description: |
+          Calculated net amount: credit_base_amt - debit_base_amt.
+          NULLs in either side coalesced to 0. Positive for revenue entries.
+
+  - name: fact_hours
+    description: |
+      Job entries — one row per entry. Carries hours, billing price, and cost
+      data with drilldown identifiers. Joins to dim_activity via activity_id.
+      Calculated measures (Prosjekttimer, Timer på Jobb, etc.) are defined in Power BI.
+    columns:
+      - name: job_id
+        description: "Job identifier (typed int). Drilldown identifier."
+      - name: transaction_number
+        description: "Transaction identifier (typed int). Drilldown identifier."
+      - name: activity_id
+        description: "Activity number (typed int). Foreign key to dim_activity.activity_id. Primary filter for hours measures."
+      - name: entry_date
+        description: "Entry date (typed date). Primary date for month-based measures."
+        tests:
+          - not_null
+      - name: finance_entry_date
+        description: "Date used for nedskrivninger reporting cut-off (typed date)."
+      - name: entry_text
+        description: "Free-text description of the entry. For drilldown."
+      - name: number_registered_qty
+        description: "Hours registered."
+      - name: billing_price_reg_base_amt
+        description: "Registered billing price in base currency. Used for revenue measures."
+      - name: billing_price_up_down_base_amt
+        description: |
+          Billing price up/down adjustment in base currency.
+          Filter on non-zero for nedskrivninger measures.
+      - name: cost_price_amt
+        description: "Cost price for the entry."
