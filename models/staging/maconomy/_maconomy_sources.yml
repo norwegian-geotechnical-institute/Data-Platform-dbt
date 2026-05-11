@@ -141,6 +141,10 @@ sources:
             description: "TODO: document business meaning of specification slot 3 for finance entries."
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
+          - name: DEBITBASE
+            description: "Debit amount in base currency. Combined with CREDITBASE to compute net amount (salgspris)."
+          - name: CREDITBASE
+            description: "Credit amount in base currency. Combined with DEBITBASE to compute net amount (salgspris)."
 
       - name: jobentry
         description: |
@@ -195,6 +199,12 @@ sources:
             description: "Project dimension link."
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
+          - name: FINANCEENTRYDATE
+            description: "Date used for the corresponding finance entry — used for nedskrivninger reporting cut-off."
+          - name: BILLINGPRICEREGBASE
+            description: "Registered billing price in base currency — used for revenue measures."
+          - name: BILLINGPRICEUPDOWNBASE
+            description: "Billing price up/down adjustment in base currency — used to identify nedskrivninger entries."
 
       - name: location
         description: |
