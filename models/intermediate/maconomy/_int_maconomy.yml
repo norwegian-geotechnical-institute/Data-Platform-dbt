@@ -1,0 +1,90 @@
+version: 2
+
+models:
+  - name: int_hours
+    description: |
+      Job entries — typed and projected for hours and cost measures.
+      Carries drilldown identifiers (job_number, entry_number, journal references)
+      so a Power BI drillthrough can resolve back to the source entry.
+    columns:
+      - name: job_entry_instance_key
+        description: "Maconomy stable row identifier. Used for uniqueness."
+        tests:
+          - not_null
+          - unique
+      - name: activity_number
+        description: "Activity number (typed int). Primary filter for measures."
+      - name: entry_date
+        description: "Entry date (typed date). Used as month context."
+
+  - name: int_finance
+    description: |
+      Finance entries — typed and projected for the P&L revenue and cost measures.
+      Carries drilldown identifiers (transaction_number + line_number, journal_number)
+      so a Power BI drillthrough can resolve back to the source posting.
+    columns:
+      - name: finance_entry_instance_key
+        description: "Maconomy stable row identifier. Used for uniqueness."
+        tests:
+          - not_null
+          - unique
+      - name: account_number
+        description: "Account number (typed int). Primary filter for P&L measures."
+      - name: entry_date
+        description: "Entry date (typed date). Used as month context."
+
+  - name: int_account
+    description: "Account dimension — typed projection of staging account."
+    columns:
+      - name: account_instance_key
+        description: "Maconomy stable row identifier."
+        tests:
+          - not_null
+          - unique
+      - name: account_number
+        description: "Account number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+
+  - name: int_activity
+    description: "Activity dimension — typed projection of staging activity."
+    columns:
+      - name: activity_instance_key
+        description: "Maconomy stable row identifier."
+        tests:
+          - not_null
+          - unique
+      - name: activity_number
+        description: "Activity number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+
+  - name: int_department
+    description: "Department dimension — typed projection of staging department (sourced from Maconomy entity)."
+    columns:
+      - name: department_instance_key
+        description: "Maconomy stable row identifier."
+        tests:
+          - not_null
+          - unique
+      - name: department_name
+        description: "Department name (business key)."
+        tests:
+          - not_null
+          - unique
+
+  - name: int_location
+    description: "Location dimension — typed projection of staging location."
+    columns:
+      - name: location_instance_key
+        description: "Maconomy stable row identifier."
+        tests:
+          - not_null
+          - unique
+      - name: location_name
+        description: "Location name (business key)."
+        tests:
+          - not_null
+          - unique
