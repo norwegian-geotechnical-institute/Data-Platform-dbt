@@ -1,0 +1,60 @@
+version: 2
+
+sources:
+  - name: sharepoint
+    description: "SharePoint Excel files ingested into bronze. Budget data and area dimension."
+    catalog: dp_bronze
+    schema: sharepoint
+
+    tables:
+      - name: budsjett
+        description: |
+          Annual budget data from <year>_Budsjett.xlsx files. Wide format
+          with 12 month columns. Each row exists in two sheets — 'kroner'
+          (currency amounts) and 'timer' (hours).
+        columns:
+          - name: selskapsnummer
+            description: "Company number."
+          - name: kontotekst
+            description: "Account description."
+          - name: konto
+            description: "Account number (joins to maconomy.account via account_id)."
+          - name: avdeling
+            description: "Department/area code."
+          - name: jan
+            description: "Budget value for January."
+          - name: feb
+            description: "Budget value for February."
+          - name: mar
+            description: "Budget value for March."
+          - name: apr
+            description: "Budget value for April."
+          - name: mai
+            description: "Budget value for May."
+          - name: jun
+            description: "Budget value for June."
+          - name: jul
+            description: "Budget value for July."
+          - name: aug
+            description: "Budget value for August."
+          - name: sep
+            description: "Budget value for September."
+          - name: okt
+            description: "Budget value for October."
+          - name: nov
+            description: "Budget value for November."
+          - name: des
+            description: "Budget value for December."
+          - name: sheet
+            description: "Sheet name from source file. Either 'kroner' (NOK) or 'timer' (hours)."
+          - name: source_filename
+            description: "Original filename. Used to extract budget year."
+
+      - name: omrader
+        description: |
+          Area (område) lookup from Avdeling.xlsx. Maps area IDs to display names.
+        columns:
+          - name: områdeid
+            description: "Area identifier."
+          - name: områdenavn
+            description: "Area display name."
