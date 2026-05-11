@@ -18,6 +18,8 @@ renamed as (
         omrade_name,
         department_id
     from int_department
+
+    WHERE sub_department_name != 'Default'
 )
 
 select * from renamed
