@@ -12,7 +12,7 @@ with stage as (
         credit_base,
         source_system,
         source_object
-    from {{ ref('stg_maconomy_financeentry') }}
+    from {{ ref('stg_maconomy_finance_project') }}
 ),
 
 typed as (

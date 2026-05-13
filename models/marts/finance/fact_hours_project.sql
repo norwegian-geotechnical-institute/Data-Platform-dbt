@@ -10,7 +10,7 @@ with int_hours as (
         billing_price_reg_base_amt,
         billing_price_up_down_base_amt,
         cost_price_amt
-    from {{ ref('int_hours') }}
+    from {{ ref('int_hours_project') }}
 ),
 
 with_calcs as (

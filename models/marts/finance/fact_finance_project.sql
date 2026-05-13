@@ -10,7 +10,7 @@ with int_finance as (
         entry_text,
         debit_base_amt,
         credit_base_amt
-    from {{ ref('int_finance') }}
+    from {{ ref('int_finance_project') }}
 ),
 
 with_calcs as (

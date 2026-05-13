@@ -12,7 +12,7 @@ with stage as (
         cost_price,
         source_system,
         source_object
-    from {{ ref('stg_maconomy_jobentry') }}
+    from {{ ref('stg_maconomy_hours_project') }}
 ),
 
 typed as (
