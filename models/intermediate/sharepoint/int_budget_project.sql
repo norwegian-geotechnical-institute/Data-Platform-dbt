@@ -9,7 +9,7 @@ with stage as (
         budget_value,
         source_system,
         source_object
-    from {{ ref('stg_sharepoint_budsjett') }}
+    from {{ ref('stg_sharepoint_budget_project') }}
 ),
 
 typed as (

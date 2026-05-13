@@ -6,7 +6,7 @@ with int_budsjett as (
         sheet,
         budget_date,
         budget_value
-    from {{ ref('int_budsjett') }}
+    from {{ ref('int_budget_project') }}
 ),
 
 renamed as (
