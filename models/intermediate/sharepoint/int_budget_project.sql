@@ -21,7 +21,8 @@ typed as (
         make_date(budget_year, month_number, 1) as budget_date,
         budget_value,
         source_system    as sys_source_system,
-        source_object    as sys_source_object
+        source_object    as sys_source_object,
+        'budget' as scenario
     from stage
 )
 
