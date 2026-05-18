@@ -46,3 +46,14 @@ models:
               values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
       - name: budget_value
         description: "Budget value for this row/sheet/month. Numeric meaning depends on sheet (NOK or hours)."
+
+      - name: int_omrader
+        description: "Area dimension — typed projection of staging omrader."
+        columns:
+        - name: omrade_id
+          description: "Area identifier (typed int). Business key. Joins to dim_department.omrade_id."
+          tests:
+           - not_null
+           - unique
+        - name: omrade_name
+          description: "Area display name."

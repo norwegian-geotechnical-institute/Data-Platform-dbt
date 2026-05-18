@@ -50,3 +50,10 @@ sources:
           - name: source_filename
             description: "Original filename. Used to extract budget year."
 
+      - name: omrader
+        description: "Area (område) lookup ingested from SharePoint Excel file."
+        columns:
+          - name: områdeid
+            description: "Area identifier."
+          - name: områdenavn
+            description: "Area display name."
