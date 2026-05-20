@@ -7,7 +7,7 @@ with finance_actual as (
             when account_id = 3510 
                 then 'Compensation EU'
             when account_id = 7000 
-                and (location_id - 1000) = sub_department_id 
+                and (sub_department_id - 1000) = entity_id 
                 then 'Cost of hours worked at production unit'
             when account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010) 
                 then 'Other cost production unit'
@@ -17,9 +17,7 @@ with finance_actual as (
         posting_date,
         account_id,
         activity_id,
-        location_id,
         sub_department_id,
-        cast(null as int) as department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_finance_project') }}
@@ -34,9 +32,7 @@ hours_revenue_sold as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id,
-        cast(null as int) as sub_department_id,
-        cast(null as int) as department_id,
+        location_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -52,9 +48,7 @@ hours_cost_billable as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id,
-        cast(null as int) as sub_department_id,
-        cast(null as int) as department_id,
+        location_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -70,9 +64,7 @@ hours_revenue_external as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id,
-        cast(null as int) as sub_department_id,
-        cast(null as int) as department_id,
+        location_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -89,9 +81,7 @@ hours_cost_external as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id,
-        cast(null as int) as sub_department_id,
-        cast(null as int) as department_id,
+        location_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -115,9 +105,7 @@ hours_single_category as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id,
-        cast(null as int) as sub_department_id,
-        cast(null as int) as department_id,
+        location_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -150,9 +138,7 @@ budget as (
         cast(null as date) as posting_date,
         account_id,
         cast(null as int) as activity_id,
-        cast(sub_department_id as int) as location_id,
-        sub_department_id,
-        department_id,
+        cast(sub_department_id as int) as sub_department_id,
         cast(null as int) as transaction_number,
         sheet
     from {{ ref('int_budget_project') }}

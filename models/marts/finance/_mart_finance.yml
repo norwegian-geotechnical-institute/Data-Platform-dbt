@@ -46,15 +46,15 @@ models:
       - name: location_id
         description: "Location identifier (typed int). Foreign key to dim_location.location_id."
 
-  - name: dim_omrade
+  - name: dim_area
     description: "Area (område) dimension sourced from SharePoint. One row per area."
     columns:
-      - name: omrade_id
+      - name: area_id
         description: "Area identifier. Business key."
         tests:
           - not_null
           - unique
-      - name: omrade_name
+      - name: area_name
         description: "Area display name."
 
   - name: fact_pl_project

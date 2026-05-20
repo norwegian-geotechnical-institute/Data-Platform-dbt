@@ -1,15 +1,15 @@
 version: 2
 
 models:
-  - name: int_omrader
+  - name: int_area
     description: "Area dimension — typed projection of staging omrader."
     columns:
-      - name: omrade_id
+      - name: area_id
         description: "Area identifier (typed int). Business key. Joins to int_department.omrade_id."
         tests:
           - not_null
           - unique
-      - name: omrade_name
+      - name: area_name
         description: "Area display name."
 
   - name: int_budsjett
