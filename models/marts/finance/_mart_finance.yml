@@ -25,26 +25,23 @@ models:
 
   - name: dim_department
     description: |
-      Department dimension with hierarchy: omrade → department → sub_department,
-      plus location link. Sourced from Maconomy entity with NGI local
-      conventions applied at staging. Rows with sub_department_name = 'Default'
-      are filtered out at the mart layer.
+      Department dimension with hierarchy: area → department → sub_department.
+      Sourced from Maconomy location with NGI local conventions applied at
+      staging. Rows with sub_department_name = 'Default' are filtered out.
     columns:
       - name: sub_department_id
-        description: "Sub-department identifier (typed int). Business key from Maconomy entity name."
+        description: "Sub-department identifier (typed int). Business key."
         tests:
           - not_null
           - unique
       - name: sub_department_name
         description: "Sub-department description."
       - name: department_id
-        description: "Department identifier (typed int). From Maconomy specification slot 3."
-      - name: omrade_id
-        description: "Område (area) identifier (typed int). From Maconomy statistic slot 1. Foreign key to dim_omrade.omrade_id."
-      - name: omrade_name
-        description: "Område display name. From Maconomy statistic slot 2."
-      - name: location_id
-        description: "Location identifier (typed int). Foreign key to dim_location.location_id."
+        description: "Department identifier (typed int)."
+      - name: department_name
+        description: "Department description."
+      - name: area_id
+        description: "Area identifier (typed int). Foreign key to dim_area.area_id."
 
   - name: dim_area
     description: "Area (område) dimension sourced from SharePoint. One row per area."
@@ -105,12 +102,8 @@ models:
         description: "Account number. Populated for finance actuals and budget rows. NULL for hours actuals."
       - name: activity_id
         description: "Activity number. Populated for actuals (finance and hours). NULL for budget rows."
-      - name: location_id
-        description: "Location identifier. Populated for actuals (finance and hours). NULL for budget rows."
       - name: sub_department_id
-        description: "Sub-department identifier. Populated for finance actuals and budget. NULL for hours actuals."
-      - name: department_id
-        description: "Department identifier. Populated for budget rows only."
+        description: "Sub-department identifier. Populated for all rows (finance actuals, hours actuals, and budget)."
       - name: transaction_number
         description: "Transaction identifier for drilldown. Populated for actuals (finance and hours). NULL for budget rows."
       - name: sheet
@@ -149,11 +142,7 @@ models:
         description: "Activity number. Populated for actuals only. NULL for budget rows."
       - name: account_id
         description: "Account number. Populated for budget rows only. NULL for actuals."
-      - name: location_id
-        description: "Location identifier. Populated for actuals only. NULL for budget rows."
       - name: sub_department_id
-        description: "Sub-department identifier. Populated for budget rows only. NULL for actuals."
-      - name: department_id
-        description: "Department identifier. Populated for budget rows only. NULL for actuals."
+        description: "Sub-department identifier. Populated for all rows (actuals and budget)."
       - name: entry_text
         description: "Free-text description from the source. Populated for actuals only. NULL for budget rows."
