@@ -141,12 +141,16 @@ budget as (
             when account_id in (9041, 9042) then 'Other sales cost (Tender and R&D proposals)'
             when account_id = 9043 then 'Internal cost'
         end as pl_report,
-        budget_value as amount,
+        case
+            when account_id in (9025, 9060, 7004, 3510, 9070, 7000, 7001, 7002)
+                then budget_value * -1
+            else budget_value
+        end as amount,
         budget_date as entry_date,
         cast(null as date) as posting_date,
         account_id,
         cast(null as int) as activity_id,
-        cast(null as int) as location_id,
+        cast(sub_department_id as int) as location_id,
         sub_department_id,
         department_id,
         cast(null as int) as transaction_number,

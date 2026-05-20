@@ -25,7 +25,7 @@ hours_budget as (
         cast(null as int) as transaction_number,
         cast(null as int) as activity_id,
         account_id,
-        cast(null as int) as location_id,
+        cast(sub_department_id as int) as location_id,
         sub_department_id,
         department_id,
         cast(null as string) as entry_text
