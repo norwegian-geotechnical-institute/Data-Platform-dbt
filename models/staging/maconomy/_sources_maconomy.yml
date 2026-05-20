@@ -1,0 +1,236 @@
+version: 2
+
+sources:
+  - name: maconomy
+    description: "Maconomy ERP tables ingested into bronze via JDBC. Source of truth for financial and project data."
+    catalog: dp_bronze
+    schema: maconomy
+
+    tables:
+      - name: entity
+        description: |
+          Maconomy ENTITY table. Represents organisational entities used as a
+          financial reporting dimension. Contains both the canonical entity
+          definition and several local conventions (specification slots,
+          statistics) repurposed by NGI.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: ENTITYNAME
+            description: "Unique entity identifier (business key)."
+          - name: DESCRIPTION
+            description: "Human-readable entity name."
+          - name: BLOCKED
+            description: "Whether the entity is blocked from new postings (1 = blocked)."
+          - name: LOCATIONNAME
+            description: "Linked location (joins to maconomy.location)."
+          - name: SPECIFICATION3NAME
+            description: "TODO: document business meaning of specification slot 3."
+          - name: STATISTIC1
+            description: "TODO: document business meaning of statistic 1."
+          - name: STATISTIC2
+            description: "TODO: document business meaning of statistic 2."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Used as the unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+      - name: account
+        description: |
+          Maconomy ACCOUNT table. Chart of accounts — defines the account
+          hierarchy, type classifications, and posting rules used across
+          financial transactions.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: ACCOUNTNUMBER
+            description: "Account number; the business key for the account."
+          - name: ACCOUNTTEXT
+            description: "Human-readable account name."
+          - name: ENTRYACCOUNTTYPE
+            description: "Type classification for postings (e.g. asset, liability, revenue, expense)."
+          - name: ACCOUNTGROUP
+            description: "Account group for hierarchical reporting."
+          - name: PROFITANDLOSSSTATUS
+            description: "P&L status indicator."
+          - name: DEPARTMENTNUMBER
+            description: "Default department for this account."
+          - name: STATISTIC1
+            description: "TODO: document business meaning of statistic 1 for accounts."
+          - name: REMARK1
+            description: "TODO: document business meaning of remark 1 for accounts."
+          - name: REMARK3
+            description: "TODO: document business meaning of remark 3 for accounts."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+      - name: activity
+        description: |
+          Maconomy ACTIVITY table. Defines billable activities used as a
+          dimension on job entries.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: ACTIVITYNUMBER
+            description: "Activity number; the business key for the activity."
+          - name: ACTIVITYTEXT
+            description: "Human-readable activity name."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+      - name: financeentry
+        description: |
+          Maconomy FINANCEENTRY table. Transactional finance postings —
+          one row per accounting entry. Source for the financial fact tables.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONNUMBER
+            description: "Transaction identifier; multiple finance entries can share a transaction."
+          - name: LINENUMBER
+            description: "Line number within the transaction."
+          - name: TRANSACTIONTYPE
+            description: "Type of transaction (posting category)."
+          - name: JOURNALNUMBER
+            description: "Journal that this entry belongs to."
+          - name: ACCOUNTNUMBER
+            description: "Account this entry posts to (joins to maconomy.account)."
+          - name: ORIGINALAMOUNT
+            description: "Posting amount in the entry's original currency."
+          - name: POSTINGDATE
+            description: "Date the entry was posted to the ledger."
+          - name: POSTINGTIME
+            description: "Time component of posting (alongside POSTINGDATE)."
+          - name: ENTRYDATE
+            description: "Date the entry was created/registered."
+          - name: REFERENCEDATE
+            description: "Reference date used for cut-off and reporting."
+          - name: VATDATE
+            description: "VAT-relevant date for the entry."
+          - name: FISCALYEAR
+            description: "Fiscal year the entry belongs to."
+          - name: ENTRYTEXT
+            description: "Free-text description of the posting."
+          - name: LOCATIONNAME
+            description: "Location dimension link."
+          - name: ENTITYNAME
+            description: "Entity dimension link (joins to maconomy.entity / department)."
+          - name: PROJECTNAME
+            description: "Project dimension link."
+          - name: ACTIVITYNUMBER
+            description: "Activity dimension link (joins to maconomy.activity)."
+          - name: TASKNAME
+            description: "Task within the activity / job."
+          - name: CUSTOMERNUMBER
+            description: "Customer dimension link (when the entry is customer-related)."
+          - name: VENDORNUMBER
+            description: "Vendor dimension link (when the entry is vendor-related)."
+          - name: COMPANYNUMBER
+            description: "Posting company (intercompany context)."
+          - name: REPORTINGCOMPANY
+            description: "Reporting company (may differ from posting company in intercompany scenarios)."
+          - name: SUBLEDGERENTRYNUMBER
+            description: "Subledger entry reference."
+          - name: SPECIFICATION2NAME
+            description: "TODO: document business meaning of specification slot 2 for finance entries."
+          - name: SPECIFICATION3NAME
+            description: "TODO: document business meaning of specification slot 3 for finance entries."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+          - name: DEBITBASE
+            description: "Debit amount in base currency. Combined with CREDITBASE to compute net amount (salgspris)."
+          - name: CREDITBASE
+            description: "Credit amount in base currency. Combined with DEBITBASE to compute net amount (salgspris)."
+
+      - name: jobentry
+        description: |
+          Maconomy JOBENTRY table. Time and cost entries against jobs/projects.
+          Source for project profitability and labour cost analysis.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: ENTRYNUMBER
+            description: "Entry number within the job."
+          - name: JOBNUMBER
+            description: "Job this entry belongs to."
+          - name: JOURNALNUMBER
+            description: "Journal that this entry belongs to."
+          - name: JOURNALLINENUMBER
+            description: "Line number within the journal."
+          - name: TRANSACTIONNUMBER
+            description: "Transaction identifier."
+          - name: TRANSACTIONTYPE
+            description: "Type of transaction."
+          - name: POSTINGDATE
+            description: "Date the entry was posted."
+          - name: ENTRYDATE
+            description: "Date the entry was created/registered."
+          - name: COMPANYNUMBER
+            description: "Posting company."
+          - name: ACTIVITYNUMBER
+            description: "Activity dimension link (joins to maconomy.activity)."
+          - name: ACTIVITYTEXT
+            description: "Activity description as captured at posting time."
+          - name: TEXT
+            description: "Free-text description of the entry."
+          - name: EMPLOYEENUMBER
+            description: "Employee who registered the entry."
+          - name: NUMBERREGISTERED
+            description: "Quantity registered — typically hours."
+          - name: COSTPRICE
+            description: "Cost price applied to the entry."
+          - name: ORIGINALCOSTPRICE
+            description: "Original cost price before any adjustments."
+          - name: MARKUPPERCENTAGE
+            description: "Markup percentage applied to the entry."
+          - name: INVOICENUMBER
+            description: "Invoice the entry has been billed on (if any)."
+          - name: LOCATIONNAME
+            description: "Location dimension link."
+          - name: ENTITYNAME
+            description: "Entity dimension link (joins to maconomy.entity / department)."
+          - name: PROJECTNAME
+            description: "Project dimension link."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+          - name: FINANCEENTRYDATE
+            description: "Date used for the corresponding finance entry — used for nedskrivninger reporting cut-off."
+          - name: BILLINGPRICEREGBASE
+            description: "Registered billing price in base currency — used for revenue measures."
+          - name: BILLINGPRICEUPDOWNBASE
+            description: "Billing price up/down adjustment in base currency — used to identify nedskrivninger entries."
+
+      - name: location
+        description: |
+          Maconomy LOCATION table. Location dimension — sites or
+          organisational locations referenced from finance entries
+          and other transactional tables.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: LOCATIONNAME
+            description: "Location name; the business key for the location."
+          - name: DESCRIPTION
+            description: "Human-readable location label."
+          - name: BLOCKED
+            description: "Whether the location is blocked from new postings."
+          - name: ENTITYNAME
+            description: "Entity (department) dimension link — default entity for this location."
+          - name: SPECIFICATION2NAME
+            description: "TODO: document business meaning of specification slot 2 for locations."
+          - name: STATISTIC1
+            description: "TODO: document business meaning of statistic 1 for locations."
+          - name: STATISTIC2
+            description: "TODO: document business meaning of statistic 2 for locations."
+          - name: REMARK1
+            description: "TODO: document business meaning of remark 1 for locations."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."  

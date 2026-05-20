@@ -1,0 +1,109 @@
+version: 2
+
+models:
+  - name: int_hours
+    description: |
+      Job entries — typed and projected for hours and cost measures.
+      Carries drilldown identifiers (job_id, transaction_number) so a
+      Power BI drillthrough can resolve back to the source entry.
+    columns:
+      - name: job_id
+        description: "Job number cast to int. Drilldown identifier."
+      - name: transaction_number
+        description: "Transaction identifier (typed int)."
+      - name: activity_id
+        description: "Activity number (typed int). Primary filter for hours measures."
+      - name: entry_date
+        description: "Entry date (typed date). Month context for measures."
+      - name: finance_entry_date
+        description: "Date used for nedskrivninger measures."
+      - name: number_registered_qty
+        description: "Quantity registered — typically hours."
+      - name: billing_price_reg_base_amt
+        description: "Registered billing price in base currency. Used for revenue measures."
+      - name: billing_price_up_down_base_amt
+        description: "Billing price up/down adjustment. Filter for nedskrivninger."
+      - name: cost_price_amt
+        description: "Cost price for the entry."
+
+  - name: int_finance
+    description: |
+      Finance entries — typed and projected for the P&L revenue and cost measures.
+      Carries transaction_number for drilldown back to the source posting.
+    columns:
+      - name: transaction_number
+        description: "Transaction identifier (typed int). Drilldown identifier."
+      - name: account_id
+        description: "Account number (typed int). Primary filter for P&L measures."
+        tests:
+          - not_null
+      - name: activity_id
+        description: "Activity number (typed int)."
+      - name: entry_date
+        description: "Entry date (typed date). Month context for measures."
+        tests:
+          - not_null
+      - name: posting_date
+        description: "Posting date (typed date)."
+      - name: location_id
+        description: "Location identifier (typed int). Foreign key to int_location.location_id."
+      - name: sub_department_id
+        description: "Sub-department identifier (typed int). Foreign key to int_department.sub_department_id."
+      - name: debit_base_amt
+        description: "Debit amount in base currency."
+      - name: credit_base_amt
+        description: "Credit amount in base currency."
+
+  - name: int_account
+    description: "Account dimension — typed projection of staging account."
+    columns:
+      - name: account_id
+        description: "Account number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: account_name
+        description: "Account text/description."
+
+  - name: int_activity
+    description: "Activity dimension — typed projection of staging activity."
+    columns:
+      - name: activity_id
+        description: "Activity number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: activity_name
+        description: "Activity text/description."
+
+  - name: int_department
+    description: |
+      Department dimension — sourced from Maconomy entity. Provides the
+      hierarchy omrade → department → sub-department, with location link.
+    columns:
+      - name: sub_department_id
+        description: "Sub-department identifier (typed int). Business key from Maconomy entity name."
+        tests:
+          - not_null
+          - unique
+      - name: sub_department_name
+        description: "Sub-department description."
+      - name: department_id
+        description: "Department identifier (typed int). From Maconomy specification slot 3."
+      - name: omrade_id
+        description: "Område (area) identifier (typed int). From Maconomy statistic slot 1."
+      - name: omrade_name
+        description: "Område display name. From Maconomy statistic slot 2."
+      - name: location_id
+        description: "Location identifier (typed int). Foreign key to int_location.location_id."
+
+  - name: int_location
+    description: "Location dimension — typed projection of staging location."
+    columns:
+      - name: location_id
+        description: "Location identifier (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: location_name
+        description: "Location description (the human-readable label)."

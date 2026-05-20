@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: int_omrader
+    description: "Area dimension — typed projection of staging omrader."
+    columns:
+      - name: omrade_id
+        description: "Area identifier (typed int). Business key. Joins to int_department.omrade_id."
+        tests:
+          - not_null
+          - unique
+      - name: omrade_name
+        description: "Area display name."
+
+  - name: int_budsjett
+    description: |
+      Budget data — typed projection of staging budsjett. One row per
+      (department, sub_department, account, sheet, year, month). The sheet
+      column distinguishes kroner (NOK amounts) from timer (hours).
+    columns:
+      - name: department_id
+        description: "Department identifier (typed int). From Excel selskapsnummer. Foreign key to int_department.department_id."
+        tests:
+          - not_null
+      - name: account_id
+        description: "Account number (typed int). Foreign key to int_account.account_id."
+        tests:
+          - not_null
+      - name: sub_department_id
+        description: "Sub-department identifier (typed int). From Excel avdeling. Foreign key to int_department.sub_department_id."
+      - name: sheet
+        description: "Either 'kroner' (NOK amounts) or 'timer' (hours)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['kroner', 'timer']
+      - name: budget_year
+        description: "Budget year (parsed from source filename)."
+        tests:
+          - not_null
+      - name: month_number
+        description: "Month as integer 1-12."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      - name: budget_value
+        description: "Budget value for this row/sheet/month. Numeric meaning depends on sheet (NOK or hours)."
+
+      - name: int_omrader
+        description: "Area dimension — typed projection of staging omrader."
+        columns:
+        - name: omrade_id
+          description: "Area identifier (typed int). Business key. Joins to dim_department.omrade_id."
+          tests:
+           - not_null
+           - unique
+        - name: omrade_name
+          description: "Area display name."

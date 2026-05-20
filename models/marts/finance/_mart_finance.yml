@@ -1,0 +1,159 @@
+version: 2
+
+models:
+  - name: dim_account
+    description: "Account dimension. One row per account."
+    columns:
+      - name: account_id
+        description: "Account number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: account_name
+        description: "Account text/description."
+
+  - name: dim_activity
+    description: "Activity dimension. One row per activity."
+    columns:
+      - name: activity_id
+        description: "Activity number (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: activity_name
+        description: "Activity text/description."
+
+  - name: dim_department
+    description: |
+      Department dimension with hierarchy: omrade → department → sub_department,
+      plus location link. Sourced from Maconomy entity with NGI local
+      conventions applied at staging. Rows with sub_department_name = 'Default'
+      are filtered out at the mart layer.
+    columns:
+      - name: sub_department_id
+        description: "Sub-department identifier (typed int). Business key from Maconomy entity name."
+        tests:
+          - not_null
+          - unique
+      - name: sub_department_name
+        description: "Sub-department description."
+      - name: department_id
+        description: "Department identifier (typed int). From Maconomy specification slot 3."
+      - name: omrade_id
+        description: "Område (area) identifier (typed int). From Maconomy statistic slot 1. Foreign key to dim_omrade.omrade_id."
+      - name: omrade_name
+        description: "Område display name. From Maconomy statistic slot 2."
+      - name: location_id
+        description: "Location identifier (typed int). Foreign key to dim_location.location_id."
+
+  - name: dim_omrade
+    description: "Area (område) dimension sourced from SharePoint. One row per area."
+    columns:
+      - name: omrade_id
+        description: "Area identifier. Business key."
+        tests:
+          - not_null
+          - unique
+      - name: omrade_name
+        description: "Area display name."
+
+  - name: fact_pl_project
+    description: |
+      Consolidated P&L fact for project reporting. One row per (scenario, pl_report)
+      combination derived from finance actuals, hours actuals (split by activity into
+      revenue and cost lines), and budget data. Each row carries a single amount
+      and a pl_report label that maps to the report_layout level names.
+    columns:
+      - name: scenario
+        description: "'actual' for Maconomy postings; 'budget' for SharePoint budget data."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['actual', 'budget']
+      - name: pl_report
+        description: |
+          P&L report line label. Maps 1:1 to report_layout[level]. NULL rows are
+          filtered out at this layer. Possible values:
+          - Revenue hours sold
+          - Revenue production unit
+          - Compensation EU
+          - Net revenue write ups / write downs
+          - Revenue from external parties
+          - Cost of hours worked at billable projects
+          - Cost of hours worked at production unit
+          - Other cost production unit
+          - Cost from external parties
+          - Other sales cost (Tender and R&D proposals)
+          - Internal cost
+        tests:
+          - not_null
+      - name: amount
+        description: |
+          The value being summed for this row. Semantics depend on pl_report:
+          revenue lines carry billing amounts; cost lines carry cost amounts;
+          budget rows carry the budget value (NOK for sheet='kroner').
+      - name: entry_date
+        description: |
+          Canonical date for the row. For actuals: entry_date from JOBENTRY or
+          FINANCEENTRY. For budget: first of month derived from budget year and
+          month_number.
+        tests:
+          - not_null
+      - name: posting_date
+        description: "Posting date — populated only for finance actuals. NULL for hours actuals and budget."
+      - name: account_id
+        description: "Account number. Populated for finance actuals and budget rows. NULL for hours actuals."
+      - name: activity_id
+        description: "Activity number. Populated for actuals (finance and hours). NULL for budget rows."
+      - name: location_id
+        description: "Location identifier. Populated for actuals (finance and hours). NULL for budget rows."
+      - name: sub_department_id
+        description: "Sub-department identifier. Populated for finance actuals and budget. NULL for hours actuals."
+      - name: department_id
+        description: "Department identifier. Populated for budget rows only."
+      - name: transaction_number
+        description: "Transaction identifier for drilldown. Populated for actuals (finance and hours). NULL for budget rows."
+      - name: sheet
+        description: "Source sheet name. Populated for budget rows ('kroner' or 'timer'). NULL for actual rows."
+
+  - name: fact_hours_qty_project
+    description: |
+      Hours quantity fact for billing-rate and hours-volume measures. Combines
+      actual hours from JOBENTRY (one row per entry) with budget hours from the
+      SharePoint timer sheet. Actuals are filtered by activity_id; budget is
+      filtered by account_id.
+    columns:
+      - name: scenario
+        description: "'actual' for Maconomy postings; 'budget' for SharePoint timer budget."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['actual', 'budget']
+      - name: hours_qty
+        description: |
+          Hours quantity. For actuals: NUMBERREGISTERED from JOBENTRY. For budget:
+          budget_value from the timer sheet.
+      - name: entry_date
+        description: |
+          Canonical date for the row. For actuals: entry_date from JOBENTRY.
+          For budget: first of month from budget_date.
+        tests:
+          - not_null
+      - name: finance_entry_date
+        description: "Finance entry date — populated for actuals only. NULL for budget rows."
+      - name: job_id
+        description: "Job identifier. Populated for actuals only. NULL for budget rows."
+      - name: transaction_number
+        description: "Transaction identifier for drilldown. Populated for actuals only. NULL for budget rows."
+      - name: activity_id
+        description: "Activity number. Populated for actuals only. NULL for budget rows."
+      - name: account_id
+        description: "Account number. Populated for budget rows only. NULL for actuals."
+      - name: location_id
+        description: "Location identifier. Populated for actuals only. NULL for budget rows."
+      - name: sub_department_id
+        description: "Sub-department identifier. Populated for budget rows only. NULL for actuals."
+      - name: department_id
+        description: "Department identifier. Populated for budget rows only. NULL for actuals."
+      - name: entry_text
+        description: "Free-text description from the source. Populated for actuals only. NULL for budget rows."
