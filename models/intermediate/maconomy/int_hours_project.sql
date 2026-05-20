@@ -27,7 +27,7 @@ typed as (
         number_registered as number_registered_qty,
         billing_price_reg_base as billing_price_reg_base_amt,
         billing_price_up_down_base as billing_price_up_down_base_amt,
-        try_cast(location_name as int) as location_id,
+        try_cast(location_name as int) as sub_department_id,
         cost_price as cost_price_amt,
         source_system       as sys_source_system,
         source_object       as sys_source_object,
