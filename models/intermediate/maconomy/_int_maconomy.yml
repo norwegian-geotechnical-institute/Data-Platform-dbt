@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_hours
+  - name: int_hours_project
     description: |
       Job entries — typed and projected for hours and cost measures.
       Carries drilldown identifiers (job_id, transaction_number) so a
@@ -25,8 +25,10 @@ models:
         description: "Billing price up/down adjustment. Filter for nedskrivninger."
       - name: cost_price_amt
         description: "Cost price for the entry."
+      - name: sub_department_id
+        description: "Sub-department identifier (typed int). Foreign key to int_department.sub_department_id."
 
-  - name: int_finance
+  - name: int_finance_project
     description: |
       Finance entries — typed and projected for the P&L revenue and cost measures.
       Carries transaction_number for drilldown back to the source posting.
@@ -45,10 +47,10 @@ models:
           - not_null
       - name: posting_date
         description: "Posting date (typed date)."
-      - name: location_id
-        description: "Location identifier (typed int). Foreign key to int_location.location_id."
       - name: sub_department_id
         description: "Sub-department identifier (typed int). Foreign key to int_department.sub_department_id."
+      - name: entity_id
+        description: "Entity identifier (typed int). Used to derive the production-unit P&L category for account 7000; not a reporting dimension."
       - name: debit_base_amt
         description: "Debit amount in base currency."
       - name: credit_base_amt
@@ -78,32 +80,17 @@ models:
 
   - name: int_department
     description: |
-      Department dimension — sourced from Maconomy entity. Provides the
-      hierarchy omrade → department → sub-department, with location link.
+      Department dimension — sourced from Maconomy location. Provides the
+      hierarchy omrade → department → sub-department.
     columns:
       - name: sub_department_id
-        description: "Sub-department identifier (typed int). Business key from Maconomy entity name."
+        description: "Sub-department identifier (typed int). Business key from Maconomy location name."
         tests:
           - not_null
           - unique
       - name: sub_department_name
-        description: "Sub-department description."
+        description: "Sub-department description. From Maconomy location description."
       - name: department_id
-        description: "Department identifier (typed int). From Maconomy specification slot 3."
+        description: "Department identifier (typed int). From Maconomy entity name."
       - name: omrade_id
-        description: "Område (area) identifier (typed int). From Maconomy statistic slot 1."
-      - name: omrade_name
-        description: "Område display name. From Maconomy statistic slot 2."
-      - name: location_id
-        description: "Location identifier (typed int). Foreign key to int_location.location_id."
-
-  - name: int_location
-    description: "Location dimension — typed projection of staging location."
-    columns:
-      - name: location_id
-        description: "Location identifier (typed int). Business key."
-        tests:
-          - not_null
-          - unique
-      - name: location_name
-        description: "Location description (the human-readable label)."
+        description: "Område (area) identifier (typed int). Derived from Maconomy specification slot 2, rounded down to the nearest 10."
