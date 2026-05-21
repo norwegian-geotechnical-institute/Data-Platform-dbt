@@ -32,7 +32,7 @@ hours_revenue_sold as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id as sub_department_id,
+        sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -48,7 +48,7 @@ hours_cost_billable as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id as sub_department_id,
+        sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -64,7 +64,7 @@ hours_revenue_external as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id as sub_department_id,
+        sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -81,7 +81,7 @@ hours_cost_external as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id as sub_department_id,
+        sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -105,7 +105,7 @@ hours_single_category as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        location_id as sub_department_id,
+        sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
