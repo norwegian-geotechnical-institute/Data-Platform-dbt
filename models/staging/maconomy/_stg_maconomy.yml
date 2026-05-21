@@ -43,6 +43,7 @@ models:
         description: "Source system identifier (always 'maconomy' for this model)."
       - name: source_object
         description: "Source object identifier (always 'entity' for this model)."
+
   - name: stg_maconomy_account
     description: "Standardized staging view over bronze Maconomy account data."
     columns:
@@ -59,6 +60,7 @@ models:
         description: "Watermark from the source system — last modification time."
         tests:
           - not_null
+
   - name: stg_maconomy_activity
     description: "Standardized staging view over bronze Maconomy activity data."
     columns:
@@ -77,60 +79,119 @@ models:
         tests:
           - not_null
 
-  - name: stg_maconomy_financeentry
-    description: "Standardized staging view over bronze Maconomy finance entry data."
+  - name: stg_maconomy_finance_project
+    description: "Standardized staging view over bronze Maconomy finance entry data (financeentry)."
     columns:
-      - name: finance_entry_instance_key
-        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
-        tests:
-          - not_null
-          - unique
-      - name: account_number
-        description: "Account this entry posts to."
-        tests:
-          - not_null
       - name: transaction_number
         description: "Transaction identifier; multiple finance entries can share a transaction."
         tests:
           - not_null
-      - name: line_number
-        description: "Line number within the transaction."
+      - name: account_number
+        description: "Account this entry posts to."
         tests:
           - not_null
+      - name: activity_number
+        description: "Activity this entry is associated with."
+      - name: entry_date
+        description: "Date the entry was registered (raw string, format yyyy.MM.dd)."
       - name: posting_date
-        description: "Date the entry was posted to the ledger."
-        tests:
-          - not_null
-      - name: source_transaction_timestamp
-        description: "Watermark from the source system — last modification time."
-        tests:
-          - not_null
-      
-  - name: stg_maconomy_jobentry
-    description: "Standardized staging view over bronze Maconomy job entry data."
+        description: "Date the entry was posted to the ledger (raw string, format yyyy.MM.dd)."
+      - name: location_name
+        description: "Linked location for the entry."
+      - name: entity_name
+        description: "Linked entity (department) for the entry."
+      - name: entry_text
+        description: "Free-text description from the source."
+      - name: debit_base
+        description: "Debit amount in base currency."
+      - name: credit_base
+        description: "Credit amount in base currency."
+      - name: ingested_at
+        description: "Timestamp when bronze ingest landed this row."
+      - name: ingestion_run_id
+        description: "Bronze run identifier; lets you trace which ingest run produced this row."
+      - name: source_system
+        description: "Source system identifier (always 'maconomy' for this model)."
+      - name: source_object
+        description: "Source object identifier (always 'financeentry' for this model)."
+
+  - name: stg_maconomy_hours_project
+    description: "Standardized staging view over bronze Maconomy job entry data (jobentry)."
     columns:
+      - name: job_entry_row_id
+        description: "Internal numeric row identifier from Maconomy."
       - name: job_entry_instance_key
         description: "Stable row identifier from Maconomy. Unique key for incremental loads."
         tests:
           - not_null
           - unique
-      - name: job_number
-        description: "Job this entry belongs to."
-        tests:
-          - not_null
       - name: entry_number
         description: "Entry number within the job."
         tests:
           - not_null
-      - name: posting_date
-        description: "Date the entry was posted."
+      - name: job_number
+        description: "Job this entry belongs to."
         tests:
           - not_null
+      - name: journal_number
+        description: "Journal number for the entry."
+      - name: journal_line_number
+        description: "Line number within the journal."
+      - name: transaction_number
+        description: "Transaction identifier; multiple job entries can share a transaction."
+      - name: transaction_type
+        description: "Maconomy transaction type."
+      - name: posting_date
+        description: "Date the entry was posted (raw string, format yyyy.MM.dd)."
+        tests:
+          - not_null
+      - name: entry_date
+        description: "Date the entry was registered (raw string, format yyyy.MM.dd)."
+      - name: finance_entry_date
+        description: "Date the entry hit finance (raw string, format yyyy.MM.dd)."
+      - name: company_number
+        description: "Company the entry belongs to."
+      - name: activity_number
+        description: "Activity this entry is associated with."
+      - name: activity_text
+        description: "Activity description text."
+      - name: entry_text
+        description: "Free-text description from the source."
+      - name: employee_number
+        description: "Employee who registered the entry."
+      - name: number_registered
+        description: "Hours quantity registered on the entry."
+      - name: cost_price
+        description: "Cost price for the registered hours."
+      - name: original_cost_price
+        description: "Original cost price before any adjustment."
+      - name: markup_percentage
+        description: "Markup percentage applied."
+      - name: billing_price_reg_base
+        description: "Registered billing price in base currency."
+      - name: billing_price_up_down_base
+        description: "Billing price write-up/write-down adjustment in base currency."
+      - name: invoice_number
+        description: "Invoice the entry was billed on, if any."
+      - name: location_name
+        description: "Linked location for the entry."
+      - name: entity_name
+        description: "Linked entity (department) for the entry."
+      - name: project_name
+        description: "Project name for the entry."
       - name: source_transaction_timestamp
         description: "Watermark from the source system — last modification time."
         tests:
           - not_null
-    
+      - name: ingested_at
+        description: "Timestamp when bronze ingest landed this row."
+      - name: ingestion_run_id
+        description: "Bronze run identifier; lets you trace which ingest run produced this row."
+      - name: source_system
+        description: "Source system identifier (always 'maconomy' for this model)."
+      - name: source_object
+        description: "Source object identifier (always 'jobentry' for this model)."
+
   - name: stg_maconomy_location
     description: "Standardized staging view over bronze Maconomy location data."
     columns:

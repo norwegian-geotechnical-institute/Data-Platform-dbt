@@ -66,7 +66,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['actual', 'budget']
+              arguments:
+                values: ['actual', 'budget']
       - name: pl_report
         description: |
           P&L report line label. Maps 1:1 to report_layout[level]. NULL rows are
@@ -109,7 +110,7 @@ models:
       - name: sheet
         description: "Source sheet name. Populated for budget rows ('kroner' or 'timer'). NULL for actual rows."
 
-  - name: fact_hours_qty_project
+  - name: fact_hours_project
     description: |
       Hours quantity fact for billing-rate and hours-volume measures. Combines
       actual hours from JOBENTRY (one row per entry) with budget hours from the
@@ -121,7 +122,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['actual', 'budget']
+              arguments:
+                values: ['actual', 'budget']
       - name: hours_qty
         description: |
           Hours quantity. For actuals: NUMBERREGISTERED from JOBENTRY. For budget:
