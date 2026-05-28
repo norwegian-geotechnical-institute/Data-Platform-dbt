@@ -6,8 +6,6 @@ with finance_actual as (
                 then 'Revenue production unit'
             when account_id = 3510 
                 then 'Compensation EU'
-            when account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010) 
-                then 'Other cost production unit'
         end as pl_report,
         salesprice as amount,
         entry_date,
@@ -18,6 +16,23 @@ with finance_actual as (
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_finance_project') }}
+),
+
+finance_other_cost_production_unit as (
+    select
+        scenario,
+        'Other cost production unit' as pl_report,
+        salesprice as amount,
+        entry_date,
+        posting_date,
+        account_id,
+        activity_id,
+        sub_department_id,
+        transaction_number,
+        cast(null as string) as sheet
+    from {{ ref('int_finance_project') }}
+    where account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010)
+        and (customer_number is null or customer_number <> 'IC20')
 ),
 
 finance_cost_production_unit as (
