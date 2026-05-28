@@ -10,6 +10,7 @@ with stage as (
         billing_price_reg_base,
         billing_price_up_down_base,
         location_name,
+        supplier_number,
         cost_price,
         source_system,
         source_object
@@ -28,6 +29,7 @@ typed as (
         billing_price_reg_base as billing_price_reg_base_amt,
         billing_price_up_down_base as billing_price_up_down_base_amt,
         try_cast(location_name as int) as sub_department_id,
+        try_cast(supplier_number as int) as supplier_id,
         cost_price as cost_price_amt,
         source_system       as sys_source_system,
         source_object       as sys_source_object,

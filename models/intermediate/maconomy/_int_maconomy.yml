@@ -27,6 +27,8 @@ models:
         description: "Cost price for the entry."
       - name: sub_department_id
         description: "Sub-department identifier (typed int). Foreign key to int_department.sub_department_id."
+      - name: supplier_id
+        description: "Supplier/vendor identifier (typed int). Used to exclude internal supplier 29999 from external-party revenue."
 
   - name: int_finance_project
     description: |
