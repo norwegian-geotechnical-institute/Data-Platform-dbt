@@ -6,11 +6,6 @@ with finance_actual as (
                 then 'Revenue production unit'
             when account_id = 3510 
                 then 'Compensation EU'
-            when account_id = 7000 
-                and (sub_department_id - 1000) = entity_id 
-                then 'Cost of hours worked at production unit'
-            when account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010) 
-                then 'Other cost production unit'
         end as pl_report,
         salesprice as amount,
         entry_date,
@@ -21,6 +16,44 @@ with finance_actual as (
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_finance_project') }}
+),
+
+finance_other_cost_production_unit as (
+    select
+        scenario,
+        'Other cost production unit' as pl_report,
+        salesprice as amount,
+        entry_date,
+        posting_date,
+        account_id,
+        activity_id,
+        sub_department_id,
+        transaction_number,
+        cast(null as string) as sheet
+    from {{ ref('int_finance_project') }}
+    where account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010)
+        and (customer_number is null or customer_number <> 'IC20')
+),
+
+finance_cost_production_unit as (
+    select
+        scenario,
+        'Cost of hours worked at production unit' as pl_report,
+        salesprice as amount,
+        entry_date,
+        posting_date,
+        account_id,
+        activity_id,
+        try_cast(
+            substring(
+                cast(sub_department_id as string),
+                instr(cast(sub_department_id as string), '1') + 1
+            ) as int
+        ) as sub_department_id,
+        transaction_number,
+        cast(null as string) as sheet
+    from {{ ref('int_finance_project') }}
+    where account_id = 7000
 ),
 
 hours_revenue_sold as (
@@ -43,7 +76,7 @@ hours_cost_billable as (
     select
         scenario,
         'Cost of hours worked at billable projects' as pl_report,
-        cost_price_amt as amount,
+        cost_price_reg_amt  as amount,
         entry_date,
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
@@ -70,13 +103,15 @@ hours_revenue_external as (
     from {{ ref('int_hours_project') }}
     where activity_id in (900, 906, 908, 910)
         and transaction_number <> 102481307
+        and (supplier_id is null or supplier_id <> 29999)
+        and billing_price_reg_base_amt not in (212636.92, 2497000)
 ),
 
 hours_cost_external as (
     select
         scenario,
         'Cost from external parties' as pl_report,
-        cost_price_amt as amount,
+        cost_price_reg_amt as amount,
         entry_date,
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
@@ -86,6 +121,7 @@ hours_cost_external as (
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
     where activity_id in (900, 906, 908, 910)
+        and (supplier_id is null or supplier_id <> 29999)
 ),
 
 hours_single_category as (
@@ -97,8 +133,8 @@ hours_single_category as (
             when billing_price_up_down_base_amt <> 0           then 'Net revenue write ups / write downs'
         end as pl_report,
         case
-            when activity_id in (102, 103, 104, 105, 115, 116) then cost_price_amt
-            when activity_id in (113, 114)                     then cost_price_amt
+            when activity_id in (102, 103, 104, 105, 115, 116) then cost_price_reg_amt
+            when activity_id in (113, 114)                     then cost_price_reg_amt
             when billing_price_up_down_base_amt <> 0           then billing_price_up_down_base_amt
         end as amount,
         entry_date,
@@ -146,6 +182,10 @@ budget as (
 
 combined as (
     select * from finance_actual
+    union all
+    select * from finance_cost_production_unit
+    union all
+    select * from finance_other_cost_production_unit
     union all
     select * from hours_revenue_sold
     union all

@@ -159,6 +159,8 @@ models:
         description: "Free-text description from the source."
       - name: employee_number
         description: "Employee who registered the entry."
+      - name: supplier_number
+        description: "Supplier/vendor on the entry. Used to exclude internal supplier 29999 from external-party revenue."
       - name: number_registered
         description: "Hours quantity registered on the entry."
       - name: cost_price
@@ -191,6 +193,8 @@ models:
         description: "Source system identifier (always 'maconomy' for this model)."
       - name: source_object
         description: "Source object identifier (always 'jobentry' for this model)."
+      - name: cost_price_reg
+        description: "Registered cost price for the hours. Used as the cost basis for the hours cost P&L lines (matches the legacy report's Kostpris)."
 
   - name: stg_maconomy_location
     description: "Standardized staging view over bronze Maconomy location data."
