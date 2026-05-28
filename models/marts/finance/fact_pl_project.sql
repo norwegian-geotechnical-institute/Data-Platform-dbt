@@ -43,7 +43,7 @@ hours_cost_billable as (
     select
         scenario,
         'Cost of hours worked at billable projects' as pl_report,
-        cost_price_reg_amt * -1 as amount,
+        cost_price_reg_amt  as amount,
         entry_date,
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
