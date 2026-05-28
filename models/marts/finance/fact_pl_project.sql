@@ -71,7 +71,7 @@ hours_revenue_external as (
     where activity_id in (900, 906, 908, 910)
         and transaction_number <> 102481307
         and (supplier_id is null or supplier_id <> 29999)
-        and billingpriceregbase in (212636.92, 2497000)
+        and billing_price_reg_base_amt in (212636.92, 2497000)
 ),
 
 hours_cost_external as (
