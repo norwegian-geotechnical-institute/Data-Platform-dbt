@@ -43,17 +43,6 @@ models:
       - name: area_id
         description: "Area identifier (typed int). Foreign key to dim_area.area_id."
 
-  - name: dim_area
-    description: "Area (område) dimension sourced from SharePoint. One row per area."
-    columns:
-      - name: area_id
-        description: "Area identifier. Business key."
-        tests:
-          - not_null
-          - unique
-      - name: area_name
-        description: "Area display name."
-
   - name: fact_pl_project
     description: |
       Consolidated P&L fact for project reporting. One row per (scenario, pl_report)
