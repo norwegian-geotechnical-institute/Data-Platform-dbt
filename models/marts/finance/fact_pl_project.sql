@@ -111,7 +111,7 @@ hours_cost_external as (
     select
         scenario,
         'Cost from external parties' as pl_report,
-        cost_price_amt as amount,
+        cost_price_reg_amt as amount,
         entry_date,
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
@@ -121,6 +121,7 @@ hours_cost_external as (
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
     where activity_id in (900, 906, 908, 910)
+        and (supplier_id is null or supplier_id <> 29999)
 ),
 
 hours_single_category as (
@@ -132,8 +133,8 @@ hours_single_category as (
             when billing_price_up_down_base_amt <> 0           then 'Net revenue write ups / write downs'
         end as pl_report,
         case
-            when activity_id in (102, 103, 104, 105, 115, 116) then cost_price_amt
-            when activity_id in (113, 114)                     then cost_price_amt
+            when activity_id in (102, 103, 104, 105, 115, 116) then cost_price_reg_amt
+            when activity_id in (113, 114)                     then cost_price_reg_amt
             when billing_price_up_down_base_amt <> 0           then billing_price_up_down_base_amt
         end as amount,
         entry_date,
@@ -183,6 +184,8 @@ combined as (
     select * from finance_actual
     union all
     select * from finance_cost_production_unit
+    union all
+    select * from finance_other_cost_production_unit
     union all
     select * from hours_revenue_sold
     union all
