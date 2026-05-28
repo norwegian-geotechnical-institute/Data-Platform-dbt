@@ -1,4 +1,4 @@
-with finance_actual as (
+finance_actual as (
     select
         scenario,
         case
@@ -6,9 +6,6 @@ with finance_actual as (
                 then 'Revenue production unit'
             when account_id = 3510 
                 then 'Compensation EU'
-            when account_id = 7000 
-                and (sub_department_id - 1000) = entity_id 
-                then 'Cost of hours worked at production unit'
             when account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010) 
                 then 'Other cost production unit'
         end as pl_report,
@@ -21,6 +18,27 @@ with finance_actual as (
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_finance_project') }}
+),
+
+finance_cost_production_unit as (
+    select
+        scenario,
+        'Cost of hours worked at production unit' as pl_report,
+        salesprice as amount,
+        entry_date,
+        posting_date,
+        account_id,
+        activity_id,
+        try_cast(
+            substring(
+                cast(sub_department_id as string),
+                instr(cast(sub_department_id as string), '1') + 1
+            ) as int
+        ) as sub_department_id,
+        transaction_number,
+        cast(null as string) as sheet
+    from {{ ref('int_finance_project') }}
+    where account_id = 7000
 ),
 
 hours_revenue_sold as (
@@ -148,6 +166,8 @@ budget as (
 
 combined as (
     select * from finance_actual
+    union all
+    select * from finance_cost_production_unit
     union all
     select * from hours_revenue_sold
     union all
