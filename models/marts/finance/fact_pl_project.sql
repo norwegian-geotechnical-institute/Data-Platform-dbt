@@ -1,4 +1,4 @@
-finance_actual as (
+with finance_actual as (
     select
         scenario,
         case
