@@ -1,6 +1,27 @@
 version: 2
 
 models:
+  - name: int_job_entry_invoice_line
+    description: |
+      Unified job entry + job invoice line fact stream, recreating Maconomy
+      EXJobEntryJobInvoiceLinePV from base bronze tables. source_marker 1 =
+      JobEntry, 2 = JobInvoiceLine.
+    columns:
+      - name: source_marker
+        description: "Row origin: 1 = JobEntry, 2 = JobInvoiceLine."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2]
+      - name: instance_key
+        description: "Maconomy INSTANCEKEY for the source row."
+        tests:
+          - not_null
+      - name: job_number
+        description: "Job number for the entry or invoice line."
+      - name: billing_price_reg_base
+        description: "Primary billing amount in base currency for P&L measures."
+
   - name: int_hours_project
     description: |
       Job entries — typed and projected for hours and cost measures.

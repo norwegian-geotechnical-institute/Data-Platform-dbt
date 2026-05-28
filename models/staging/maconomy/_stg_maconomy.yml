@@ -192,6 +192,25 @@ models:
       - name: source_object
         description: "Source object identifier (always 'jobentry' for this model)."
 
+  - name: stg_maconomy_jobinvoiceline
+    description: |
+      Standardized staging view over bronze Maconomy job invoice line data.
+      Source for the invoice-side rows in int_job_entry_invoice_line.
+    columns:
+      - name: job_invoice_line_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: job_number
+        description: "Job this invoice line belongs to."
+        tests:
+          - not_null
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
+
   - name: stg_maconomy_location
     description: "Standardized staging view over bronze Maconomy location data."
     columns:

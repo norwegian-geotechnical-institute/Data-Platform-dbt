@@ -206,6 +206,45 @@ sources:
           - name: BILLINGPRICEUPDOWNBASE
             description: "Billing price up/down adjustment in base currency — used to identify nedskrivninger entries."
 
+      - name: jobinvoiceline
+        description: |
+          Maconomy JOBINVOICELINE table. Invoice selection/allocation lines linked to
+          job entries. Combined with jobentry in silver to recreate
+          EXJobEntryJobInvoiceLinePV.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: ENTRYNUMBER
+            description: "Entry number within the job."
+          - name: JOBNUMBER
+            description: "Job this invoice line belongs to."
+          - name: TRANSACTIONNUMBER
+            description: "Transaction identifier."
+          - name: ACTIVITYNUMBER
+            description: "Activity dimension link (joins to maconomy.activity)."
+          - name: BILLINGPRICEREGBASE
+            description: "Registered billing price in base currency, when present on the line."
+          - name: BILLINGPRICEINVOICEDBASE
+            description: "Invoiced billing price in base currency."
+          - name: BILLINGPRICEFORINVOICINGBASE
+            description: "Billing price selected for invoicing in base currency."
+          - name: BILLINGPRICETOTALBASE
+            description: "Total billing price on the invoice line in base currency."
+          - name: BILLINGPRICEUPDOWNBASE
+            description: "Billing price up/down adjustment in base currency."
+          - name: COSTPRICE
+            description: "Cost price applied to the line."
+          - name: NUMBERREGISTERED
+            description: "Quantity registered on the line."
+          - name: LOCATIONNAME
+            description: "Location dimension link."
+          - name: ENTITYNAME
+            description: "Entity dimension link."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
       - name: location
         description: |
           Maconomy LOCATION table. Location dimension — sites or
