@@ -181,6 +181,8 @@ sources:
             description: "Free-text description of the entry."
           - name: EMPLOYEENUMBER
             description: "Employee who registered the entry."
+          - name: SUPPLIERNUMBER
+            description: "Supplier/vendor on the entry. Used to exclude internal supplier 29999 from external-party revenue."
           - name: NUMBERREGISTERED
             description: "Quantity registered — typically hours."
           - name: COSTPRICE

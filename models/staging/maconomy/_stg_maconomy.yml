@@ -159,6 +159,8 @@ models:
         description: "Free-text description from the source."
       - name: employee_number
         description: "Employee who registered the entry."
+      - name: supplier_number
+        description: "Supplier/vendor on the entry. Used to exclude internal supplier 29999 from external-party revenue."
       - name: number_registered
         description: "Hours quantity registered on the entry."
       - name: cost_price
