@@ -5,7 +5,7 @@ with finance_actual as (
             when account_id = 7004 
                 then 'Revenue production unit'
             when account_id = 3510 
-                then 'Compensation EU'
+                then 'Revenue hours sold'
         end as pl_report,
         salesprice as amount,
         entry_date,
@@ -76,7 +76,7 @@ hours_cost_billable as (
     select
         scenario,
         'Cost of hours worked at billable projects' as pl_report,
-        cost_price_reg_amt  as amount,
+        cost_price_reg_amt as amount,          -- add * -1 here if negating cost
         entry_date,
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
@@ -111,7 +111,7 @@ hours_cost_external as (
     select
         scenario,
         'Cost from external parties' as pl_report,
-        cost_price_reg_amt as amount,
+        cost_price_reg_amt as amount,          -- add * -1 here if negating cost
         entry_date,
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
@@ -128,14 +128,12 @@ hours_single_category as (
     select
         scenario,
         case
-            when activity_id in (102, 103, 104, 105, 115, 116) then 'Internal cost'
-            when activity_id in (113, 114)                     then 'Other sales cost (Tender and R&D proposals)'
-            when billing_price_up_down_base_amt <> 0           then 'Net revenue write ups / write downs'
+            when activity_id in (102, 103, 104, 105, 115, 116, 113, 114) then 'Internal cost'
+            when billing_price_up_down_base_amt <> 0                     then 'Net revenue write ups / write downs'
         end as pl_report,
         case
-            when activity_id in (102, 103, 104, 105, 115, 116) then cost_price_reg_amt
-            when activity_id in (113, 114)                     then cost_price_reg_amt
-            when billing_price_up_down_base_amt <> 0           then billing_price_up_down_base_amt
+            when activity_id in (102, 103, 104, 105, 115, 116, 113, 114) then cost_price_reg_amt   -- add * -1 here if negating cost
+            when billing_price_up_down_base_amt <> 0                     then billing_price_up_down_base_amt
         end as amount,
         entry_date,
         cast(null as date) as posting_date,
@@ -155,15 +153,14 @@ budget as (
         case
             when account_id = 9025 then 'Revenue hours sold'
             when account_id = 7004 then 'Revenue production unit'
-            when account_id = 3510 then 'Compensation EU'
+            when account_id = 3510 then 'Revenue hours sold'
             when account_id = 9060 then 'Net revenue write ups / write downs'
             when account_id = 9070 then 'Revenue from external parties'
             when account_id = 9044 then 'Cost of hours worked at billable projects'
             when account_id = 7000 then 'Cost of hours worked at production unit'
             when account_id in (7001, 7002) then 'Other cost production unit'
             when account_id = 9080 then 'Cost from external parties'
-            when account_id in (9041, 9042) then 'Other sales cost (Tender and R&D proposals)'
-            when account_id = 9043 then 'Internal cost'
+            when account_id in (9041, 9042, 9043) then 'Internal cost'
         end as pl_report,
         case
             when account_id in (9025, 9060, 7004, 3510, 9070, 7000, 7001, 7002)
