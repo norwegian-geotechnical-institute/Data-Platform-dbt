@@ -12,6 +12,7 @@ with stage as (
         location_name,
         supplier_number,
         cost_price,
+        cost_price_reg,
         source_system,
         source_object
     from {{ ref('stg_maconomy_hours_project') }}
@@ -31,6 +32,7 @@ typed as (
         try_cast(location_name as int) as sub_department_id,
         try_cast(supplier_number as int) as supplier_id,
         cost_price as cost_price_amt,
+        cost_price_reg as cost_price_reg_amt,
         source_system       as sys_source_system,
         source_object       as sys_source_object,
         'actual' as scenario

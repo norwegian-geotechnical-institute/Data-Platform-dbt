@@ -193,6 +193,8 @@ models:
         description: "Source system identifier (always 'maconomy' for this model)."
       - name: source_object
         description: "Source object identifier (always 'jobentry' for this model)."
+      - name: cost_price_reg
+        description: "Registered cost price for the hours. Used as the cost basis for the hours cost P&L lines (matches the legacy report's Kostpris)."
 
   - name: stg_maconomy_location
     description: "Standardized staging view over bronze Maconomy location data."

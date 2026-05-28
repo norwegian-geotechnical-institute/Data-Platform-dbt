@@ -207,6 +207,8 @@ sources:
             description: "Registered billing price in base currency — used for revenue measures."
           - name: BILLINGPRICEUPDOWNBASE
             description: "Billing price up/down adjustment in base currency — used to identify nedskrivninger entries."
+          - name: COSTPRICEREG
+            description: "Costpricereg"
 
       - name: location
         description: |
