@@ -34,6 +34,7 @@ with source as (
         source_system,
         source_object
     from {{ source('maconomy', 'jobentry') }}
+    where entrynumber >= 0
 ),
 
 renamed as (
@@ -61,7 +62,10 @@ renamed as (
         originalcostprice        as original_cost_price,
         markuppercentage         as markup_percentage,
         billingpriceregbase      as billing_price_reg_base,
-        billingpriceupdownbase   as billing_price_up_down_base,
+        case
+            when trim(coalesce(invoicenumber, '')) != '' then 0.0
+            else billingpriceupdownbase
+        end                      as billing_price_up_down_base,
         invoicenumber            as invoice_number,
         locationname             as location_name,
         entityname               as entity_name,

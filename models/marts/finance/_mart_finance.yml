@@ -46,9 +46,12 @@ models:
   - name: fact_pl_project
     description: |
       Consolidated P&L fact for project reporting. One row per (scenario, pl_report)
-      combination derived from finance actuals, hours actuals (split by activity into
-      revenue and cost lines), and budget data. Each row carries a single amount
-      and a pl_report label that maps to the report_layout level names.
+      combination derived from finance actuals, job entry + invoice line actuals via
+      int_job_entry_invoice_line (split by activity into revenue and cost lines),
+      and budget data. Each row carries a single amount and a pl_report label that
+      maps to the report_layout level names. Write-ups/write-downs follow the legacy
+      Maconomy report: int_job_entry_invoice_line where billing_price_up_down_base <> 0,
+      dated on finance_entry_date.
     columns:
       - name: scenario
         description: "'actual' for Maconomy postings; 'budget' for SharePoint budget data."
@@ -81,9 +84,9 @@ models:
           budget rows carry the budget value (NOK for sheet='kroner').
       - name: entry_date
         description: |
-          Canonical date for the row. For actuals: entry_date from JOBENTRY or
-          FINANCEENTRY. For budget: first of month derived from budget year and
-          month_number.
+          Canonical date for the row. For actuals: entry_date from JOBENTRY,
+          JOBINVOICELINE, or FINANCEENTRY. For budget: first of month derived from
+          budget year and month_number.
         tests:
           - not_null
       - name: posting_date
