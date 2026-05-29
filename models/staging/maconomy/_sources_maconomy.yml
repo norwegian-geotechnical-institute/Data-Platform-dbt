@@ -220,6 +220,8 @@ sources:
             description: "Entry number within the job."
           - name: JOBNUMBER
             description: "Job this invoice line belongs to."
+          - name: DEBITCREDIT
+            description: "Debit/credit indicator. When 1, financial amounts are negated at staging."
           - name: TRANSACTIONNUMBER
             description: "Transaction identifier."
           - name: ACTIVITYNUMBER

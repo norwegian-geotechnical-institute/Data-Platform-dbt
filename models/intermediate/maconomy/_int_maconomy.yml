@@ -12,7 +12,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: [1, 2]
+              arguments:
+                values: [1, 2]
       - name: instance_key
         description: "Maconomy INSTANCEKEY for the source row."
         tests:

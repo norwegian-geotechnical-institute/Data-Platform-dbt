@@ -1,15 +1,37 @@
-with finance_actual as (
+{#-
+  Write-ups/write-downs match legacy Maconomy PBI query 1D_Nedskrivninger:
+  EXJOBENTRYJOBINVOICELINEPV, BILLINGPRICEUPDOWNBASE <> 0, FINANCEENTRYDATE.
+  Other job-based P&L lines still use JobEntry via int_hours_project.
+-#}
+
+with hours_write_ups_downs as (
+    select
+        'actual' as scenario,
+        'Net revenue write ups / write downs' as pl_report,
+        billing_price_up_down_base as amount,
+        finance_entry_date as entry_date,
+        cast(null as date) as posting_date,
+        cast(null as int) as account_id,
+        try_cast(nullif(trim(cast(activity_number as string)), '') as int) as activity_id,
+        try_cast(nullif(trim(cast(location_name as string)), '') as int) as sub_department_id,
+        cast(null as int) as transaction_number,
+        cast(null as string) as sheet
+    from {{ ref('int_job_entry_invoice_line') }}
+    where billing_price_up_down_base <> 0
+),
+
+finance_actual as (
     select
         scenario,
         case
-            when account_id = 7004 
+            when account_id = 7004
                 then 'Revenue production unit'
-            when account_id = 3510 
+            when account_id = 3510
                 then 'Compensation EU'
-            when account_id = 7000 
-                and (sub_department_id - 1000) = entity_id 
+            when account_id = 7000
+                and (sub_department_id - 1000) = entity_id
                 then 'Cost of hours worked at production unit'
-            when account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010) 
+            when account_id in (7001, 7002, 7005, 7006, 7007, 7008, 7009, 7010)
                 then 'Other cost production unit'
         end as pl_report,
         salesprice as amount,
@@ -93,13 +115,11 @@ hours_single_category as (
         scenario,
         case
             when activity_id in (102, 103, 104, 105, 115, 116) then 'Internal cost'
-            when activity_id in (113, 114)                     then 'Other sales cost (Tender and R&D proposals)'
-            when billing_price_up_down_base_amt <> 0           then 'Net revenue write ups / write downs'
+            when activity_id in (113, 114) then 'Other sales cost (Tender and R&D proposals)'
         end as pl_report,
         case
             when activity_id in (102, 103, 104, 105, 115, 116) then cost_price_amt
-            when activity_id in (113, 114)                     then cost_price_amt
-            when billing_price_up_down_base_amt <> 0           then billing_price_up_down_base_amt
+            when activity_id in (113, 114) then cost_price_amt
         end as amount,
         entry_date,
         cast(null as date) as posting_date,
@@ -110,7 +130,6 @@ hours_single_category as (
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
     where activity_id in (102, 103, 104, 105, 115, 116, 113, 114)
-        or billing_price_up_down_base_amt <> 0
 ),
 
 budget as (
@@ -138,7 +157,7 @@ budget as (
         cast(null as date) as posting_date,
         account_id,
         cast(null as int) as activity_id,
-        cast(sub_department_id as int) as sub_department_id,
+        try_cast(sub_department_id as int) as sub_department_id,
         cast(null as int) as transaction_number,
         sheet
     from {{ ref('int_budget_project') }}
@@ -155,10 +174,23 @@ combined as (
     union all
     select * from hours_cost_external
     union all
+    select * from hours_write_ups_downs
+    union all
     select * from hours_single_category
     union all
     select * from budget
 )
 
-select * from combined
+select
+    scenario,
+    pl_report,
+    amount,
+    entry_date,
+    posting_date,
+    try_cast(account_id as int) as account_id,
+    try_cast(activity_id as int) as activity_id,
+    try_cast(sub_department_id as int) as sub_department_id,
+    try_cast(transaction_number as int) as transaction_number,
+    sheet
+from combined
 where pl_report is not null

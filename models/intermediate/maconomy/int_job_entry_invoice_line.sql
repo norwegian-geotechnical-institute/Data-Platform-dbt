@@ -1,6 +1,11 @@
 {#-
   Recreates Maconomy JobEntryJobInvoiceLinePV / EXJobEntryJobInvoiceLinePV as a
   UNION ALL of base tables. Marker 1 = JobEntry rows, marker 2 = JobInvoiceLine rows.
+
+  PV business rules are applied in staging (not here):
+  - stg_maconomy_hours_project: ENTRYNUMBER >= 0; zero write-up/down when invoiced
+  - stg_maconomy_jobinvoiceline: debitcredit sign on cost/total cols only (not up/down)
+
   See: https://help.deltek.com/Products/Maconomy/Documentation/BPMAdmin/Admin_Materialized_Views.html
 -#}
 
@@ -24,9 +29,9 @@ job_entry_rows as (
         journal_line_number,
         transaction_number,
         transaction_type,
-        posting_date,
-        entry_date,
-        finance_entry_date,
+        try_to_date(posting_date, 'yyyy.MM.dd') as posting_date,
+        try_to_date(entry_date, 'yyyy.MM.dd') as entry_date,
+        try_to_date(finance_entry_date, 'yyyy.MM.dd') as finance_entry_date,
         company_number,
         activity_number,
         activity_text,
@@ -65,9 +70,9 @@ job_invoice_line_rows as (
         journal_line_number,
         transaction_number,
         transaction_type,
-        posting_date,
-        entry_date,
-        finance_entry_date,
+        try_to_date(posting_date, 'yyyy.MM.dd') as posting_date,
+        cast(null as date) as entry_date,
+        try_to_date(finance_entry_date, 'yyyy.MM.dd') as finance_entry_date,
         company_number,
         activity_number,
         activity_text,

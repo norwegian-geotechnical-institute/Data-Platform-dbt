@@ -4,26 +4,19 @@ with source as (
         instancekey,
         entrynumber,
         jobnumber,
-        journalnumber,
-        journallinenumber,
-        transactionnumber,
-        transactiontype,
-        postingdate,
-        entrydate,
+        debitcredit,
+        typeofentry,
+        transactiontyperegistered,
+        invoicedate,
         financeentrydate,
         companynumber,
         activitynumber,
-        activitytext,
         text,
         employeenumber,
-        numberregistered,
-        costprice,
-        originalcostprice,
-        markuppercentage,
-        billingpriceregbase,
+        numberof,
+        costpricetotal,
+        billingpricebase,
         billingpriceupdownbase,
-        billingpriceinvoicedbase,
-        billingpriceforinvoicingbase,
         billingpricetotalbase,
         invoicenumber,
         locationname,
@@ -43,27 +36,48 @@ renamed as (
         instancekey              as job_invoice_line_instance_key,
         entrynumber              as entry_number,
         jobnumber                as job_number,
-        journalnumber            as journal_number,
-        journallinenumber        as journal_line_number,
-        transactionnumber        as transaction_number,
-        transactiontype          as transaction_type,
-        postingdate              as posting_date,
-        entrydate                as entry_date,
+        debitcredit              as debit_credit,
+        cast(null as bigint)     as journal_number,
+        cast(null as bigint)     as journal_line_number,
+        cast(null as bigint)     as transaction_number,
+        coalesce(transactiontyperegistered, typeofentry) as transaction_type,
+        invoicedate              as posting_date,
+        cast(null as date)       as entry_date,
         financeentrydate         as finance_entry_date,
         companynumber            as company_number,
         activitynumber           as activity_number,
-        activitytext             as activity_text,
+        cast(null as string)     as activity_text,
         text                     as entry_text,
         employeenumber           as employee_number,
-        numberregistered         as number_registered,
-        costprice                as cost_price,
-        originalcostprice        as original_cost_price,
-        markuppercentage         as markup_percentage,
-        billingpriceregbase      as billing_price_reg_base,
+        case
+            when debitcredit = 1 and coalesce(numberof, 0) = 0 then numberof
+            when debitcredit = 1 then -numberof
+            else numberof
+        end                      as number_registered,
+        case
+            when debitcredit = 1 and coalesce(costpricetotal, 0) = 0 then costpricetotal
+            when debitcredit = 1 then -costpricetotal
+            else costpricetotal
+        end                      as cost_price,
+        cast(null as double)     as original_cost_price,
+        cast(null as double)     as markup_percentage,
+        case
+            when debitcredit = 1 and coalesce(billingpricebase, 0) = 0 then billingpricebase
+            when debitcredit = 1 then -billingpricebase
+            else billingpricebase
+        end                      as billing_price_reg_base,
         billingpriceupdownbase   as billing_price_up_down_base,
-        billingpriceinvoicedbase as billing_price_invoiced_base,
-        billingpriceforinvoicingbase as billing_price_for_invoicing_base,
-        billingpricetotalbase    as billing_price_total_base,
+        case
+            when debitcredit = 1 and coalesce(billingpricetotalbase, 0) = 0 then billingpricetotalbase
+            when debitcredit = 1 then -billingpricetotalbase
+            else billingpricetotalbase
+        end                      as billing_price_invoiced_base,
+        cast(null as double)     as billing_price_for_invoicing_base,
+        case
+            when debitcredit = 1 and coalesce(billingpricetotalbase, 0) = 0 then billingpricetotalbase
+            when debitcredit = 1 then -billingpricetotalbase
+            else billingpricetotalbase
+        end                      as billing_price_total_base,
         invoicenumber            as invoice_number,
         locationname             as location_name,
         entityname               as entity_name,
