@@ -16,8 +16,10 @@ with source as (
         activitytext,
         text,
         employeenumber,
+        suppliernumber,
         numberregistered,
         costprice,
+        costpricereg,
         originalcostprice,
         markuppercentage,
         billingpriceregbase,
@@ -53,11 +55,10 @@ renamed as (
         activitytext             as activity_text,
         text                     as entry_text,
         employeenumber           as employee_number,
-        case
-            when trim(coalesce(invoicenumber, '')) != '' then 0.0
-            else numberregistered
-        end                      as number_registered,
+        suppliernumber           as supplier_number,
+        numberregistered         as number_registered,
         costprice                as cost_price,
+        costpricereg             as cost_price_reg,
         originalcostprice        as original_cost_price,
         markuppercentage         as markup_percentage,
         billingpriceregbase      as billing_price_reg_base,
