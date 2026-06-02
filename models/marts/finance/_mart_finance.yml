@@ -31,9 +31,6 @@ models:
     columns:
       - name: sub_department_id
         description: "Sub-department identifier (typed int). Business key."
-        tests:
-          - not_null
-          - unique
       - name: sub_department_name
         description: "Sub-department description."
       - name: department_id

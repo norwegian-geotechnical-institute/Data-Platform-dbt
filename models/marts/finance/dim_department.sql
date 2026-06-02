@@ -19,8 +19,14 @@ joined as (
     select
         dept.sub_department_id,
         dept.sub_department_name,
-        dept.department_id,
-        dept.department_name,
+        case
+            when dept.department_id = 607 then 606
+            else dept.department_id
+        end as department_id,
+        case
+            when dept.department_id = 607 then 'NGI Digital'
+            else replace(dept.department_name, ' - Leiested', '')
+        end as department_name,
         dept.area_id,
         area.area_name
     from int_department as dept
