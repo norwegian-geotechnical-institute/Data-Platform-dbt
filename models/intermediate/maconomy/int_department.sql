@@ -20,6 +20,7 @@ typed as (
         source_system,
         source_object
     from stage
+    WHERE location_description != 'Default'
 )
 
 select * from typed
