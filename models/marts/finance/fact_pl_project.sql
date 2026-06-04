@@ -1,8 +1,3 @@
-{#-
-  Write-ups/write-downs match legacy Maconomy PBI query 1D_Nedskrivninger:
-  EXJOBENTRYJOBINVOICELINEPV, BILLINGPRICEUPDOWNBASE <> 0, FINANCEENTRYDATE.
-  Other job-based P&L lines still use JobEntry via int_hours_project.
--#}
 
 with hours_write_ups_downs as (
     select
@@ -87,7 +82,7 @@ hours_revenue_sold as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        sub_department_id,
+        department_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
@@ -103,7 +98,7 @@ hours_cost_billable as (
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        sub_department_id,
+        department_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
