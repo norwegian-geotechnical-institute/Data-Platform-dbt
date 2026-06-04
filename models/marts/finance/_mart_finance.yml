@@ -49,6 +49,14 @@ models:
       maps to the report_layout level names. Write-ups/write-downs follow the legacy
       Maconomy report: int_job_entry_invoice_line where billing_price_up_down_base <> 0,
       dated on finance_entry_date.
+  
+      Department attribution note: hours booked on billable projects (int_hours_project,
+      activity_id = 100) carry two departments — the project's department and the
+      employee's home department. For the P&L lines 'Revenue hours sold' and 'Cost of
+      hours worked at billable projects', both the revenue and the calculatory cost must
+      be attributed to the EMPLOYEE's department, not the project's department. These two
+      lines therefore source sub_department_id from int_hours_project.department_id (the
+      employee department), unlike the other hours lines which use sub_department_id.
     columns:
       - name: scenario
         description: "'actual' for Maconomy postings; 'budget' for SharePoint budget data."
@@ -62,11 +70,16 @@ models:
           P&L report line label. Maps 1:1 to report_layout[level]. NULL rows are
           filtered out at this layer. Possible values:
           - Revenue hours sold
+              Billable hours revenue (int_hours_project, activity_id = 100). Attributed
+              to the employee's home department via department_id — see sub_department_id.
           - Revenue production unit
           - Compensation EU
           - Net revenue write ups / write downs
           - Revenue from external parties
           - Cost of hours worked at billable projects
+              Calculatory (cost_price_reg_amt) cost of billable hours (int_hours_project,
+              activity_id = 100). Attributed to the employee's home department via
+              department_id — see sub_department_id.
           - Cost of hours worked at production unit
           - Other cost production unit
           - Cost from external parties
@@ -93,7 +106,28 @@ models:
       - name: activity_id
         description: "Activity number. Populated for actuals (finance and hours). NULL for budget rows."
       - name: sub_department_id
-        description: "Sub-department identifier. Populated for all rows (finance actuals, hours actuals, and budget)."
+        description: |
+          Sub-department identifier used as the join key to the department dimension.
+          Populated for all rows (finance actuals, hours actuals, and budget).
+  
+          Source differs by P&L line because most hours transactions are booked
+          against two departments — the project's department and the employee's home
+          department (where the person is employed):
+  
+          - 'Revenue hours sold' and 'Cost of hours worked at billable projects'
+            (int_hours_project, activity_id = 100): sourced from department_id, i.e. the
+            EMPLOYEE's home department. This is intentional: both the revenue and the
+            calculatory cost for billable hours must be attributed to the employee's
+            department, not the project's department.
+
+  
+          - Other hours lines (Revenue/Cost from external parties, Internal cost, hours
+            write-ups/downs): taken directly from int_hours_project.sub_department_id.
+  
+          - Finance actuals: the finance sub-department. The 'Cost of hours worked at
+            production unit' line strips a leading segment (substring after the first '1').
+  
+          - Budget: budget sub_department_id.
       - name: transaction_number
         description: "Transaction identifier for drilldown. Populated for actuals (finance and hours). NULL for budget rows."
       - name: sheet

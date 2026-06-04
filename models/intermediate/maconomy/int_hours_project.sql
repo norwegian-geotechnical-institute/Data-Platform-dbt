@@ -10,7 +10,7 @@ with stage as (
         billing_price_reg_base,
         billing_price_up_down_base,
         location_name,
-        entityname,
+        entity_name,
         supplier_number,
         cost_price,
         cost_price_reg,
