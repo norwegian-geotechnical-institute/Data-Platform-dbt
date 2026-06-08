@@ -19,10 +19,7 @@ joined as (
     select
         dept.sub_department_id,
         dept.sub_department_name,
-        case
-            when dept.department_id = 607 then 606
-            else dept.department_id
-        end as department_id,
+        department_id,
         case
             when dept.department_id = 607 then 'NGI Digital'
             when department_id = 305 then 'Naturfare Trondheim'

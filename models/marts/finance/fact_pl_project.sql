@@ -144,19 +144,13 @@ hours_cost_external as (
 hours_single_category as (
     select
         scenario,
-        case
-            when activity_id in (102, 103, 104, 105, 115, 116, 113, 114) then 'Internal cost'
-            when billing_price_up_down_base_amt <> 0                     then 'Net revenue write ups / write downs'
-        end as pl_report,
-        case
-            when activity_id in (102, 103, 104, 105, 115, 116, 113, 114) then cost_price_reg_amt   -- add * -1 here if negating cost
-            when billing_price_up_down_base_amt <> 0                     then billing_price_up_down_base_amt
-        end as amount,
+        'Internal cost' as pl_report,
+        cost_price_reg_amt as amount,          -- add * -1 here if negating cost
         entry_date,
         cast(null as date) as posting_date,
         cast(null as int) as account_id,
         activity_id,
-        sub_department_id,
+        department_id as sub_department_id,
         transaction_number,
         cast(null as string) as sheet
     from {{ ref('int_hours_project') }}
