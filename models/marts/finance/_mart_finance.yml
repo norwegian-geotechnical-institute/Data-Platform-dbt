@@ -73,7 +73,6 @@ models:
               Billable hours revenue (int_hours_project, activity_id = 100). Attributed
               to the employee's home department via department_id — see sub_department_id.
           - Revenue production unit
-          - Compensation EU
           - Net revenue write ups / write downs
           - Revenue from external parties
           - Cost of hours worked at billable projects
@@ -83,7 +82,6 @@ models:
           - Cost of hours worked at production unit
           - Other cost production unit
           - Cost from external parties
-          - Other sales cost (Tender and R&D proposals)
           - Internal cost
         tests:
           - not_null
