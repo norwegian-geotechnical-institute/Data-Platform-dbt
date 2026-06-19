@@ -23,22 +23,51 @@ models:
       - name: activity_name
         description: "Activity text/description."
 
-  - name: dim_department
+  - name: dim_exec_department
     description: |
-      Department dimension with hierarchy: area → department → sub_department.
-      Sourced from Maconomy location with NGI local conventions applied at
-      staging. Rows with sub_department_name = 'Default' are filtered out.
+      Executive (department-level) department dimension. One row per department —
+      the higher-level rollup of the responsibility hierarchy. Sourced from
+      int_department, deduplicated to department grain (first area_id per
+      department_id). Excludes the 'Default' sub-department. department_name applies
+      NGI label overrides (607 → 'NGI Digital', 305 → 'Naturfare Trondheim') and
+      strips the ' - Leiested' suffix.
+    columns:
+      - name: department_id
+        description: "Department identifier (typed int). Business key."
+        tests:
+          - not_null
+          - unique
+      - name: department_name
+        description: "Department display name, with NGI label overrides applied."
+      - name: area_id
+        description: "Area identifier (typed int). Foreign key to dim_area.area_id."
+      - name: area_name
+        description: "Area display name, denormalised from the area dimension."
+
+  - name: dim_resp_department
+    description: |
+      Responsibility (sub-department-level) department dimension with hierarchy:
+      area → department → sub_department. This is the grain the fact tables join to
+      via sub_department_id. Sourced from int_department with NGI local conventions
+      applied. Rows with sub_department_name = 'Default' are filtered out.
+      department_name applies the same NGI label overrides as dim_exec_department;
+      area_name is denormalised in.
     columns:
       - name: sub_department_id
-        description: "Sub-department identifier (typed int). Business key."
+        description: "Sub-department identifier (typed int). Business key. Join key for the fact tables."
+        tests:
+          - not_null
+          - unique
       - name: sub_department_name
         description: "Sub-department description."
       - name: department_id
-        description: "Department identifier (typed int)."
+        description: "Department identifier (typed int). Rolls up to dim_exec_department."
       - name: department_name
-        description: "Department description."
+        description: "Department display name, with NGI label overrides applied."
       - name: area_id
         description: "Area identifier (typed int). Foreign key to dim_area.area_id."
+      - name: area_name
+        description: "Area display name, denormalised from the area dimension."
 
   - name: fact_pl_project
     description: |
@@ -49,7 +78,7 @@ models:
       maps to the report_layout level names. Write-ups/write-downs follow the legacy
       Maconomy report: int_job_entry_invoice_line where billing_price_up_down_base <> 0,
       dated on finance_entry_date.
-  
+
       Department attribution note: hours booked on billable projects (int_hours_project,
       activity_id = 100) carry two departments — the project's department and the
       employee's home department. For the P&L lines 'Revenue hours sold' and 'Cost of
@@ -105,26 +134,25 @@ models:
         description: "Activity number. Populated for actuals (finance and hours). NULL for budget rows."
       - name: sub_department_id
         description: |
-          Sub-department identifier used as the join key to the department dimension.
+          Sub-department identifier used as the join key to dim_resp_department.
           Populated for all rows (finance actuals, hours actuals, and budget).
-  
+
           Source differs by P&L line because most hours transactions are booked
           against two departments — the project's department and the employee's home
           department (where the person is employed):
-  
+
           - 'Revenue hours sold' and 'Cost of hours worked at billable projects'
             (int_hours_project, activity_id = 100): sourced from department_id, i.e. the
             EMPLOYEE's home department. This is intentional: both the revenue and the
             calculatory cost for billable hours must be attributed to the employee's
             department, not the project's department.
 
-  
           - Other hours lines (Revenue/Cost from external parties, Internal cost, hours
             write-ups/downs): taken directly from int_hours_project.sub_department_id.
-  
+
           - Finance actuals: the finance sub-department. The 'Cost of hours worked at
             production unit' line strips a leading segment (substring after the first '1').
-  
+
           - Budget: budget sub_department_id.
       - name: transaction_number
         description: "Transaction identifier for drilldown. Populated for actuals (finance and hours). NULL for budget rows."
@@ -137,6 +165,10 @@ models:
       actual hours from JOBENTRY (one row per entry) with budget hours from the
       SharePoint timer sheet. Actuals are filtered by activity_id; budget is
       filtered by account_id.
+
+      Department attribution: department_id carries the employee's home department.
+      A 2025 correction reassigns employee 4485's activity-100 hours to department
+      305 for that year; all other rows use the entry's own department_id.
     columns:
       - name: scenario
         description: "'actual' for Maconomy postings; 'budget' for SharePoint timer budget."
@@ -167,5 +199,12 @@ models:
         description: "Account number. Populated for budget rows only. NULL for actuals."
       - name: sub_department_id
         description: "Sub-department identifier. Populated for all rows (actuals and budget)."
+      - name: department_id
+        description: |
+          Department identifier — the employee's home department for actuals (with the
+          2025 employee-4485 → 305 correction applied), and the sub_department_id for
+          budget rows.
+      - name: employee_id
+        description: "Employee identifier. Populated for actuals only. NULL for budget rows."
       - name: entry_text
         description: "Free-text description from the source. Populated for actuals only. NULL for budget rows."
