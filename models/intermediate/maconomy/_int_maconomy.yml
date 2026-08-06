@@ -1,6 +1,57 @@
 version: 2
 
 models:
+  - name: int_employee_current
+    description: |
+      Current employee master record per employee number. This is the
+      conformed join surface for employee attributes in downstream marts.
+    columns:
+      - name: employee_number
+        description: "Employee number business key."
+        tests:
+          - not_null
+          - unique
+      - name: employee_name
+        description: "Employee display name."
+      - name: source_transaction_timestamp
+        description: "Source modification timestamp for the selected current record."
+
+  - name: int_job_header_current
+    description: |
+      Current job/project header record per job number. Keeps the source
+      revision choice in Silver/intermediate so Gold marts do not join to
+      potentially multi-version JOBHEADER rows.
+    columns:
+      - name: job_number
+        description: "Job/project number business key."
+        tests:
+          - not_null
+          - unique
+      - name: project_manager_number
+        description: "Project manager employee number from Maconomy."
+      - name: task_list
+        description: "Task list assigned to the job."
+      - name: source_transaction_timestamp
+        description: "Source modification timestamp for the selected current record."
+
+  - name: int_task_list_line_current
+    description: |
+      Current task list line record per task list and task name. Used by
+      project facts and task dimensions for consistent task descriptions.
+    columns:
+      - name: task_list
+        description: "Task list identifier."
+        tests:
+          - not_null
+      - name: task_name
+        description: "Task code/name within the task list."
+        tests:
+          - not_null
+      - name: task_description
+        description: "Human-readable task description."
+      - name: source_transaction_timestamp
+        description: "Source modification timestamp for the selected current record."
+
   - name: int_job_entry_invoice_line
     description: |
       Unified job entry + job invoice line fact stream, recreating Maconomy
@@ -53,6 +104,36 @@ models:
         description: "Supplier/vendor identifier (typed int). Used to exclude internal supplier 29999 from external-party revenue."
       - name: cost_price_reg_amt
         description: "Registered cost price (COSTPRICEREG). Cost basis for the hours cost P&L lines; matches the legacy report's Kostpris."
+
+  - name: int_job_entry_enriched
+    description: |
+      Reusable enriched Maconomy JOBENTRY stream at one source row grain.
+      Adds typed dates and joins job header, employee, and project manager
+      attributes without applying consumer-specific filters.
+    columns:
+      - name: job_entry_instance_key
+        description: "Stable row identifier from Maconomy JOBENTRY."
+        tests:
+          - not_null
+          - unique
+      - name: job_number
+        description: "Job/project number from JOBENTRY."
+        tests:
+          - not_null
+      - name: task_name
+        description: "Task code/name from JOBENTRY."
+      - name: task_description
+        description: "Task description from TASKLISTLINE when a matching job task list line exists."
+      - name: activity_type
+        description: "Maconomy activity type."
+      - name: activity_number
+        description: "Maconomy activity number."
+      - name: entry_date
+        description: "Parsed Maconomy entry date."
+      - name: project_manager_number
+        description: "Project manager employee number from JOBHEADER."
+      - name: project_manager_name
+        description: "Project manager name from EMPLOYEE."
 
   - name: int_finance_project
     description: |

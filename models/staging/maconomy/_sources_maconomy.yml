@@ -34,6 +34,101 @@ sources:
             description: "Stable row identifier from Maconomy. Used as the unique key for incremental loads."
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
+
+      - name: employee
+        description: |
+          Maconomy EMPLOYEE table. Employee master data — home department and
+          other HR attributes used for hours attribution in reporting.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: EMPLOYEENUMBER
+            description: "Employee number; business key referenced from job entries."
+          - name: NAME1
+            description: "Employee name."
+          - name: LOCATIONNAME
+            description: "Employee home location/department link."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+      - name: jobheader
+        description: |
+          Maconomy JOBHEADER table. Job/project header — location, customer,
+          and other job-level attributes joined from job entries via JOBNUMBER.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: JOBNUMBER
+            description: "Job number; business key referenced from job entries."
+          - name: JOBNAME
+            description: "Job name or title."
+          - name: LOCATIONNAME
+            description: "Job location/department — used for Avdeling in finance reports."
+          - name: PROJECTMANAGERNUMBER
+            description: "Project manager employee number."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+      - name: jobbudget
+        description: |
+          Maconomy JOBBUDGET table. Job/project budget header used for
+          project-level budget and contract attributes.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: JOBNUMBER
+            description: "Job number; business key joining to maconomy.jobheader."
+          - name: POPUP2
+            description: "Contract-type popup value used for project contract classification."
+          - name: BILLINGPRICEENTERPRISE
+            description: "Enterprise/base-currency billing budget amount."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+      - name: jobgroupinformation
+        description: |
+          Maconomy JOBGROUPINFORMATION table. Lookup table for JOBHEADER.JOBGROUP.
+          Provides the job group number and display name used for project type
+          classification.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: JOBGROUPNUMBER
+            description: "Job group number; joins to JOBHEADER.JOBGROUP."
+          - name: NAME
+            description: "Human-readable job group name."
+          - name: CAPITALIZATION
+            description: "Capitalization flag from Maconomy."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+      - name: tasklistline
+        description: |
+          Maconomy TASKLISTLINE table. Task definitions within task lists,
+          joined from JOBHEADER.TASKLIST and JOBENTRY.TASKNAME to provide task
+          descriptions in project reporting.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: TASKLIST
+            description: "Task list identifier; joins to JOBHEADER.TASKLIST."
+          - name: TASKNAME
+            description: "Task name/code within the task list; joins to JOBENTRY.TASKNAME."
+          - name: DESCRIPTION
+            description: "Human-readable task description."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
       - name: account
         description: |
           Maconomy ACCOUNT table. Chart of accounts — defines the account
@@ -64,6 +159,39 @@ sources:
             description: "Stable row identifier from Maconomy. Unique key for incremental loads."
           - name: TRANSACTIONTIMESTAMP
             description: "Watermark column — last modification time at the source."
+
+      - name: customer
+        description: |
+          Maconomy CUSTOMER table. Customer master data referenced from
+          finance entries and job headers via CUSTOMERNUMBER.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: CUSTOMERNUMBER
+            description: "Customer number; business key referenced from transactional tables."
+          - name: NAME1
+            description: "Customer name."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
+      - name: vendor
+        description: |
+          Maconomy VENDOR table. Vendor/supplier master data referenced from
+          finance entries via VENDORNUMBER.
+        columns:
+          - name: ROWID
+            description: "Internal numeric row identifier from Maconomy."
+          - name: VENDORNUMBER
+            description: "Vendor number; business key referenced from transactional tables."
+          - name: NAME1
+            description: "Vendor name."
+          - name: INSTANCEKEY
+            description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+          - name: TRANSACTIONTIMESTAMP
+            description: "Watermark column — last modification time at the source."
+
       - name: activity
         description: |
           Maconomy ACTIVITY table. Defines billable activities used as a
@@ -278,4 +406,4 @@ sources:
           - name: INSTANCEKEY
             description: "Stable row identifier from Maconomy. Unique key for incremental loads."
           - name: TRANSACTIONTIMESTAMP
-            description: "Watermark column — last modification time at the source."  
+            description: "Watermark column — last modification time at the source."

@@ -1,0 +1,110 @@
+version: 2
+
+models:
+  - name: dim_project
+    description: |
+      Gold project dimension for eight-digit Maconomy project jobs. One row
+      per project job number, with project manager and customer attributes
+      available for Power BI filtering.
+    columns:
+      - name: job_number
+        description: "Eight-digit project job number."
+        tests:
+          - not_null
+          - unique
+      - name: job_name
+        description: "Project/job display name from JOBHEADER."
+      - name: project_name
+        description: "Project name from JOBHEADER."
+      - name: project_manager_number
+        description: "Project manager employee number from JOBHEADER."
+      - name: project_manager_name
+        description: "Project manager display name from EMPLOYEE."
+      - name: customer_number
+        description: "Customer number from JOBHEADER."
+      - name: customer_name
+        description: "Customer name from JOBHEADER."
+      - name: task_list
+        description: "Task list assigned to the project job."
+
+  - name: dim_project_task
+    description: |
+      Gold project task dimension for eight-digit Maconomy project jobs. One
+      row per project/task composite key, sourced from the project's current
+      task list.
+    columns:
+      - name: task_key
+        description: "Composite task key: job_number-task_name."
+        tests:
+          - not_null
+          - unique
+      - name: job_number
+        description: "Eight-digit project job number."
+        tests:
+          - not_null
+      - name: task_name
+        description: "Task code/name from TASKLISTLINE."
+        tests:
+          - not_null
+      - name: task_description
+        description: "Human-readable task description."
+
+  - name: fact_project_time_actuals
+    description: |
+      Gold fact table for project time actuals. One row per scoped Maconomy
+      JOBENTRY row: eight-digit project jobs, activity_type = 0, and
+      activity_number = 100. No project manager or project is hardcoded;
+      downstream reports filter by project, project manager, task, employee,
+      and year-month.
+    columns:
+      - name: job_entry_instance_key
+        description: "Stable Maconomy JOBENTRY row key."
+        tests:
+          - not_null
+          - unique
+      - name: job_number
+        description: "Eight-digit project job number."
+        tests:
+          - not_null
+      - name: task_name
+        description: "Task code/name from JOBENTRY."
+      - name: task_description
+        description: "Task description from TASKLISTLINE."
+      - name: task_key
+        description: "Composite key job_number-task_name."
+      - name: activity_type
+        description: "Activity type. This mart is scoped to 0."
+        tests:
+          - not_null
+      - name: activity_number
+        description: "Activity number. This mart is scoped to 100."
+        tests:
+          - not_null
+      - name: employee_number
+        description: "Employee number from JOBENTRY."
+      - name: employee_name
+        description: "Employee name from EMPLOYEE."
+      - name: number_registered_qty
+        description: "Registered hours from JOBENTRY.NUMBERREGISTERED."
+      - name: billing_price_reg_base_amt
+        description: "Registered billing price in base currency."
+      - name: cost_price_reg_amt
+        description: "Registered cost price from JOBENTRY.COSTPRICEREG."
+      - name: entry_date
+        description: "Parsed JOBENTRY entry date."
+        tests:
+          - not_null
+      - name: entry_year_month
+        description: "Entry year-month in yyyy-MM format."
+        tests:
+          - not_null
+      - name: project_manager_number
+        description: "Project manager employee number from JOBHEADER."
+      - name: project_manager_name
+        description: "Project manager name from EMPLOYEE."
+      - name: job_name
+        description: "Project/job display name from JOBHEADER."
+      - name: customer_number
+        description: "Customer number from JOBHEADER."
+      - name: customer_name
+        description: "Customer name from JOBHEADER."

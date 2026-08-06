@@ -155,8 +155,12 @@ models:
         description: "Company the entry belongs to."
       - name: activity_number
         description: "Activity this entry is associated with."
+      - name: activity_type
+        description: "Maconomy activity type."
       - name: activity_text
         description: "Activity description text."
+      - name: task_name
+        description: "Task code/name registered on the job entry."
       - name: entry_text
         description: "Free-text description from the source."
       - name: employee_number
@@ -199,6 +203,95 @@ models:
         description: "Source object identifier (always 'jobentry' for this model)."
       - name: cost_price_reg
         description: "Registered cost price for the hours. Used as the cost basis for the hours cost P&L lines (matches the legacy report's Kostpris)."
+
+  - name: stg_maconomy_employee
+    description: "Standardized staging view over bronze Maconomy employee data."
+    columns:
+      - name: employee_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: employee_number
+        description: "Employee number; business key referenced from job entries and project manager fields."
+        tests:
+          - not_null
+      - name: employee_name
+        description: "Employee display name."
+      - name: employee_email
+        description: "Employee email address from Maconomy."
+      - name: location_name
+        description: "Employee home location."
+      - name: entity_name
+        description: "Employee home entity/department."
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
+
+  - name: stg_maconomy_jobheader
+    description: "Standardized staging view over bronze Maconomy job/project header data."
+    columns:
+      - name: job_header_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: job_number
+        description: "Job/project number; business key referenced from job entries."
+        tests:
+          - not_null
+      - name: job_name
+        description: "Job/project display name."
+      - name: customer_number
+        description: "Customer number from the job header."
+      - name: customer_name
+        description: "Customer name copied onto the job header."
+      - name: customer_popup_1
+        description: "Customer popup field from the job header."
+      - name: project_manager_number
+        description: "Employee number for the project manager. Used as a report filter, not hardcoded in dbt."
+      - name: task_list
+        description: "Task list assigned to the job; joins to TASKLISTLINE once that source is ingested."
+      - name: project_closed
+        description: "Raw closed flag from Maconomy."
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
+
+  - name: stg_maconomy_tasklistline
+    description: "Standardized staging view over bronze Maconomy task list line data."
+    columns:
+      - name: task_list_line_instance_key
+        description: "Stable row identifier from Maconomy. Unique key for incremental loads."
+        tests:
+          - not_null
+          - unique
+      - name: task_list
+        description: "Task list identifier; joins to stg_maconomy_jobheader.task_list."
+        tests:
+          - not_null
+      - name: task_name
+        description: "Task code/name within the task list; joins to stg_maconomy_hours_project.task_name."
+        tests:
+          - not_null
+      - name: task_description
+        description: "Human-readable task description."
+      - name: activity_number
+        description: "Activity number configured on the task list line."
+      - name: activity_type
+        description: "Activity type configured on the task list line."
+      - name: is_blocked
+        description: "Raw blocked flag from Maconomy."
+      - name: can_be_used_for_time_registration
+        description: "Raw flag indicating whether the task can be used for time registration."
+      - name: allow_time_registration
+        description: "Raw flag indicating whether time registration is allowed."
+      - name: source_transaction_timestamp
+        description: "Watermark from the source system — last modification time."
+        tests:
+          - not_null
 
   - name: stg_maconomy_jobinvoiceline
     description: |
