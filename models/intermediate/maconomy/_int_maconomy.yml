@@ -82,6 +82,14 @@ models:
     columns:
       - name: job_id
         description: "Job number cast to int. Drilldown identifier."
+      - name: job_number
+        description: |
+          Job number as a trimmed string, exactly as Maconomy stores it. Prefer
+          this over job_id for any join back to JOBHEADER or a task list:
+          job_id is try_cast(job_number as int) and is therefore NULL for the
+          N-suffixed job numbers used by company 20 (e.g. '20250160N').
+      - name: task_name
+        description: "Task code/name from JOBENTRY.TASKNAME. Trimmed to match TASKLISTLINE.TASKNAME."
       - name: transaction_number
         description: "Transaction identifier (typed int)."
       - name: activity_id
