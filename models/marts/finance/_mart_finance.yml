@@ -206,5 +206,9 @@ models:
           budget rows.
       - name: employee_id
         description: "Employee identifier. Populated for actuals only. NULL for budget rows."
+      - name: task_name
+        description: |
+          Task code from JOBENTRY.TASKNAME. Populated for actuals only — budget
+          rows come from the SharePoint timer sheet, which has no task grain.
       - name: entry_text
         description: "Free-text description from the source. Populated for actuals only. NULL for budget rows."

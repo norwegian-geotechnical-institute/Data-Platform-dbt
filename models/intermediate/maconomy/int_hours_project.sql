@@ -1,6 +1,7 @@
 with stage as (
     select
         job_number,
+        task_name,
         transaction_number,
         activity_number,
         entry_date,
@@ -23,6 +24,8 @@ with stage as (
 typed as (
     select
         try_cast(job_number as int) as job_id,
+        trim(cast(job_number as string)) as job_number,
+        trim(cast(task_name as string)) as task_name,
         try_cast(transaction_number as int) as transaction_number,
         try_cast(activity_number as int)      as activity_id,
         try_to_date(entry_date, 'yyyy.MM.dd') as entry_date,
