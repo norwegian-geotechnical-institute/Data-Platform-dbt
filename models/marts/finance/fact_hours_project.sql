@@ -19,6 +19,7 @@ with hours_actual as (
             end as int
         ) as department_id,
         employee_id,
+        task_name,
         entry_text
     from {{ ref('int_hours_project') }}
 ),
@@ -36,6 +37,7 @@ hours_budget as (
         cast(sub_department_id as int) as sub_department_id,
         cast(sub_department_id as int) as department_id,
         cast(null as int) as employee_id,
+        cast(null as string) as task_name,
         cast(null as string) as entry_text
     from {{ ref('int_budget_project') }}
     where sheet = 'timer'
